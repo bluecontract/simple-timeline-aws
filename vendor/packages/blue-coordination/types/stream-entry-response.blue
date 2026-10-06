@@ -1,0 +1,28 @@
+{
+  "name": "Stream Entry Response",
+  "description": "Exact data entry and private salt opening a batch commitment.",
+  "type": "Coordination/Provider Response",
+  "entry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "salt": {
+    "type": "Text",
+    "schema": {
+      "required": true,
+      "minLength": 64,
+      "maxLength": 64
+    }
+  },
+  "entryAttestation": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

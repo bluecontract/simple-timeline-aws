@@ -1,0 +1,7 @@
+{
+  "name": "Provider Request",
+  "description": "Base API request. Concrete operations carry their own parameters; no common client ID, clock, nonce or repeated provider is required.",
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

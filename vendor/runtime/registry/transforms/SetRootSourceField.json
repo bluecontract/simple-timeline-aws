@@ -1,0 +1,4 @@
+{
+  "name": "Blue Language Set Root Source Field Transformation",
+  "description": "Deterministic preprocessing transformation. Configuration fields are field (Text), expression (Text containing exactly one JSON or portable Blue YAML Source expression), and optional format (Text json or yaml, default json). All configuration and expression syntax is validated before any transformation runs. The Source root must be an object. The parsed expression defensively replaces the named direct root field before baseline preprocessing. The target blue is forbidden and the expression must not contain a blue directive. Type aliases and primitive inference in the assigned expression are processed by the document baseline afterward. Name and description are optional identity metadata. No other configuration fields are accepted."
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Update Timeline Access Request",
+  "type": "Coordination/Provider Request",
+  "access": {
+    "type": "Coordination/Timeline Access",
+    "schema": {
+      "required": true
+    }
+  },
+  "allowedTimelines": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Signed Timeline"
+  },
+  "allowedKeys": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Ed25519 Public Key"
+  },
+  "idempotencyKey": {
+    "type": "Text",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

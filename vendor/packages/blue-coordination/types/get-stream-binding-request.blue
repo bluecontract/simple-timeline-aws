@@ -1,0 +1,22 @@
+{
+  "name": "Get Stream Binding Request",
+  "description": "Read stream assignment for one timeline and timestamp.",
+  "type": "Coordination/Provider Request",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "timestamp": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740990
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

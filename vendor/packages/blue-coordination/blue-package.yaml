@@ -1,0 +1,246 @@
+{
+  "format": 2,
+  "name": "blue-coordination",
+  "namespace": "Coordination",
+  "version": "0.2.0-rc.2",
+  "previewOnly": true,
+  "language": "Language",
+  "imports": {
+    "Language": {
+      "path": "../blue-language/dist/package.bluepkg"
+    },
+    "Contracts": {
+      "path": "../blue-contracts/dist/package.bluepkg"
+    }
+  },
+  "protocol": {
+    "name": "Coordination / timestamped inputs",
+    "rules": "spec/coordination.md",
+    "requires": {
+      "contracts": "Contracts"
+    },
+    "status": "implementation-candidate"
+  },
+  "executionRequires": [
+    "Contracts"
+  ],
+  "exports": [
+    {
+      "name": "Ed25519 Public Key",
+      "path": "types/ed25519-public-key.blue"
+    },
+    {
+      "name": "Ed25519 Signature",
+      "path": "types/ed25519-signature.blue"
+    },
+    {
+      "name": "Timeline Provider",
+      "path": "types/timeline-provider.blue"
+    },
+    {
+      "name": "Timeline",
+      "path": "types/timeline.blue"
+    },
+    {
+      "name": "Signed Timeline",
+      "path": "types/signed-timeline.blue"
+    },
+    {
+      "name": "Provider Descriptor",
+      "path": "types/provider-descriptor.blue"
+    },
+    {
+      "name": "Actor",
+      "path": "types/actor.blue"
+    },
+    {
+      "name": "Principal Actor",
+      "path": "types/principal-actor.blue"
+    },
+    {
+      "name": "Agent Actor",
+      "path": "types/agent-actor.blue"
+    },
+    {
+      "name": "Source",
+      "path": "types/source.blue"
+    },
+    {
+      "name": "Timeline Entry",
+      "path": "types/timeline-entry.blue"
+    },
+    {
+      "name": "Provider Attestation",
+      "path": "types/provider-attestation.blue"
+    },
+    {
+      "name": "Timeline Completeness Guarantee",
+      "path": "types/timeline-completeness-guarantee.blue"
+    },
+    {
+      "name": "Timeline Attestation",
+      "path": "types/timeline-attestation.blue"
+    },
+    {
+      "name": "Timeline Range Evidence",
+      "path": "types/timeline-range-evidence.blue"
+    },
+    {
+      "name": "Timeline Successor Evidence",
+      "path": "types/timeline-successor-evidence.blue"
+    },
+    {
+      "name": "Provider Request",
+      "path": "types/provider-request.blue"
+    },
+    {
+      "name": "Signed Reader Request",
+      "path": "types/signed-reader-request.blue"
+    },
+    {
+      "name": "Provider Response",
+      "path": "types/provider-response.blue"
+    },
+    {
+      "name": "Provider Failure",
+      "path": "types/provider-failure.blue"
+    },
+    {
+      "name": "Create Timeline Request",
+      "path": "types/create-timeline-request.blue"
+    },
+    {
+      "name": "Timeline Created Response",
+      "path": "types/timeline-created-response.blue"
+    },
+    {
+      "name": "Append Entry Request",
+      "path": "types/append-entry-request.blue"
+    },
+    {
+      "name": "Append Entry Response",
+      "path": "types/append-entry-response.blue"
+    },
+    {
+      "name": "Timeline Read Cursor",
+      "path": "types/timeline-read-cursor.blue"
+    },
+    {
+      "name": "Read Timeline Request",
+      "path": "types/read-timeline-request.blue"
+    },
+    {
+      "name": "Timeline Entries Page",
+      "path": "types/timeline-entries-page.blue"
+    },
+    {
+      "name": "Timeline Read Response",
+      "path": "types/timeline-read-response.blue"
+    },
+    {
+      "name": "Fetch Timeline Entry Request",
+      "path": "types/fetch-timeline-entry-request.blue"
+    },
+    {
+      "name": "Timeline Entry Response",
+      "path": "types/timeline-entry-response.blue"
+    },
+    {
+      "name": "Resolve Timeline Content Request",
+      "path": "types/resolve-timeline-content-request.blue"
+    },
+    {
+      "name": "Timeline Content Response",
+      "path": "types/timeline-content-response.blue"
+    },
+    {
+      "name": "Public Timeline Channel",
+      "path": "types/public-timeline-channel.blue"
+    },
+    {
+      "name": "Timeline Access Update",
+      "path": "types/timeline-access-update.blue"
+    },
+    {
+      "name": "Update Timeline Access",
+      "path": "types/update-timeline-access.blue"
+    },
+    {
+      "name": "Timeline Access",
+      "path": "types/timeline-access.blue"
+    },
+    {
+      "name": "Create Timeline Access Request",
+      "path": "types/create-timeline-access-request.blue"
+    },
+    {
+      "name": "Update Timeline Access Request",
+      "path": "types/update-timeline-access-request.blue"
+    },
+    {
+      "name": "Get Timeline Access Request",
+      "path": "types/get-timeline-access-request.blue"
+    },
+    {
+      "name": "Timeline Access Response",
+      "path": "types/timeline-access-response.blue"
+    },
+    {
+      "name": "Timeline Update Stream",
+      "path": "types/timeline-update-stream.blue"
+    },
+    {
+      "name": "Timeline Stream Binding",
+      "path": "types/timeline-stream-binding.blue"
+    },
+    {
+      "name": "Timeline Announcement",
+      "path": "types/timeline-announcement.blue"
+    },
+    {
+      "name": "Timeline Stream Batch",
+      "path": "types/timeline-stream-batch.blue"
+    },
+    {
+      "name": "Get Stream Binding Request",
+      "path": "types/get-stream-binding-request.blue"
+    },
+    {
+      "name": "Stream Binding Response",
+      "path": "types/stream-binding-response.blue"
+    },
+    {
+      "name": "Fetch Stream Entry Request",
+      "path": "types/fetch-stream-entry-request.blue"
+    },
+    {
+      "name": "Stream Entry Response",
+      "path": "types/stream-entry-response.blue"
+    },
+    {
+      "name": "Timeline Stream Evidence",
+      "path": "types/timeline-stream-evidence.blue"
+    },
+    {
+      "name": "Order Key",
+      "path": "types/order-key.blue"
+    },
+    {
+      "name": "Source Coverage",
+      "path": "types/source-coverage.blue"
+    },
+    {
+      "name": "Input Selection",
+      "path": "types/input-selection.blue"
+    },
+    {
+      "name": "Timeline Channel",
+      "path": "types/timeline-channel.blue"
+    }
+  ],
+  "readme": "README.md",
+  "files": [
+    "docs/examples.md",
+    "examples/protocol.json"
+  ]
+}

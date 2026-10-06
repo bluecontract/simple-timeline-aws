@@ -1,0 +1,20 @@
+{
+  "name": "Public Timeline Channel",
+  "type": "Contracts/External Channel",
+  "description": "Authenticated input from the public Signed Timeline identified by provider and url. Read its entries through the provider endpoint without reader credentials.",
+  "provider": {
+    "type": "Coordination/Timeline Provider",
+    "schema": {
+      "required": true
+    }
+  },
+  "url": {
+    "type": "Text",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

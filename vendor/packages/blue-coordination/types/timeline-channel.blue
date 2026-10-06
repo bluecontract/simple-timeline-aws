@@ -1,0 +1,20 @@
+{
+  "name": "Timeline Channel",
+  "description": "Direct authenticated actor input on a declared timeline. Implementation requires this exact protocol.",
+  "type": "Contracts/Channel",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "actor": {
+    "type": "Coordination/Actor",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Signed Reader Request",
+  "description": "Reader proof over exact request content. Does not grant owner authority.",
+  "request": {
+    "type": "Coordination/Provider Request",
+    "schema": {
+      "required": true
+    }
+  },
+  "publicKey": {
+    "type": "Coordination/Ed25519 Public Key",
+    "schema": {
+      "required": true
+    }
+  },
+  "signature": {
+    "type": "Coordination/Ed25519 Signature",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Timeline Read Response",
+  "description": "Request-correlated signed checkpoint and, exactly when requested, a bulk page from that same prefix.",
+  "type": "Coordination/Provider Response",
+  "page": {
+    "description": "Timeline Entries Page required exactly when request.limit > 0; absent for limit=0. Its checkpoint must equal the response checkpoint."
+  },
+  "checkpoint": {
+    "type": "Coordination/Timeline Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

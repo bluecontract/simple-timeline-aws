@@ -1,0 +1,8 @@
+{
+  "name": "Agent Actor",
+  "description": "A non-human actor, such as an application, automated service or institution. Domain types define its details.",
+  "type": "Coordination/Actor",
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

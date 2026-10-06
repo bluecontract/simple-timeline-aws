@@ -1,0 +1,117 @@
+# Infrastructure and guarantees
+
+The stack contains an API Gateway HTTP API, a Python Lambda serving both the
+console and protocol, a DynamoDB state/session table, private S3 buckets, Secrets
+Manager, IAM roles and CloudWatch log groups. A small installation Lambda copies
+the checksum-pinned release into the target account and initializes the secret.
+The main service does not need access to the source release bucket after installation.
+
+## Commit boundary
+
+This first implementation intentionally uses one serialized provider state. Each
+mutation—or read that issues a new completeness guarantee—works from a consistent
+DynamoDB state pointer, writes an immutable compressed S3 snapshot, then commits
+a replacement pointer with a conditional write. A conflict reloads current state,
+rechecks permissions and retries. No signed success leaves the service before
+that commit succeeds. This serializes appends, completeness seals and revocations.
+
+A crash before commit can leave an unreachable snapshot but cannot publish a
+partially applied state. A crash after commit but before the client receives its
+response is handled by the durable idempotency record. Owner retries must reuse
+the same idempotency key. Historical retries do not undo later permission changes.
+Timestamps are assigned as the maximum of wall-clock microseconds, previous entry
+plus one, and the previously sealed bound.
+
+Snapshots contain Blue objects, accepted chains, durable checkpoints and
+idempotency records; they contain no signing seed or owner password. S3 snapshot
+hashes are checked when loading. Restored objects are rehashed with the pinned Blue implementation. Their original
+admission is reused only from the provider’s own hash-checked committed snapshot;
+remote request content still goes through semantic admission. The reusable admission
+is bound to the exact vendored runtime and package manifest; a changed runtime
+requires an explicit state migration. Noncanonical source
+forms are admitted again to reproduce their canonical identities. Access updates use the actual pinned
+Contracts processor, not a separately invented permission-document format.
+
+## Console reads
+
+Each committed snapshot includes the owner workspace view, produced from that
+same state. Workspace, entry-list and stored-object requests read the hash-checked
+snapshot directly; they do not initialize the Blue execution engine or replay
+access documents. Every request checks the consistent state pointer, so a write
+by another Lambda replaces the cached view on the next read. Older snapshots
+gain this view in one normal, conditional state commit.
+
+This read model is only for the authenticated console. Protocol responses,
+permission decisions and mutations still use the full Blue execution path.
+Refreshing the password secret updates session validation while preserving the
+state cache when the provider signing seed has not changed.
+
+## Authentication
+
+The provider’s random Ed25519 seed and salted scrypt password hash are stored in
+Secrets Manager. The owner receives a random opaque session token in a Secure,
+HttpOnly, SameSite=Strict cookie. Only its hash is retained in DynamoDB. Sessions
+expire after 12 hours. Mutations check Origin. Login attempts are rate-limited with
+an atomic counter; source IPs are hashed. Request bodies, passwords and seeds are
+not written to logs.
+
+Change AdminPassword by updating the stack parameter. Secret values are refreshed
+within 60 seconds; existing sessions are then rejected. Provider name, company,
+website and endpoint are immutable creation values. The installer saves them with
+the provider secret and rejects a stack update that changes any of them, before
+installing code or changing the secret. The deploy command rejects changed identity
+arguments before publishing assets. Runtime configuration must match the saved
+values as well. Ordinary code updates preserve these values and the signing key.
+
+ProviderName, ProviderCompany and ProviderWebsite initialize a new provider's
+identity. The website is an informational claim; ENDPOINT is assigned from the
+actual API Gateway resource and appears explicitly on new provider objects.
+Restoration rejects an endpoint different from the one adopted in the persisted
+provider. Existing providers keep their original identity and inherited fields.
+The console displays those resolved details beside the exact object; inlining
+a provider reference preserves its BlueId, whereas adding inherited properties
+to an old provider object would change it.
+
+## Storage, retention and scale
+
+This is suitable for a small provider and a personal owner console. It is not yet
+a high-volume banking deployment. Snapshot rewriting and full access-history
+replay make cost and latency grow with history. Keep the current single commit
+boundary until a partitioned storage implementation has equivalent concurrency
+and crash-recovery tests. Existing MyOS services and their poller are not modified
+by this stack; integrating a MyOS feeder is a subsequent step.
+
+The API endpoint, data buckets, the DynamoDB table and the provider secret have CloudFormation
+retention policies. DynamoDB point-in-time recovery and S3 versioning are enabled.
+The scripted deployment also enables stack termination protection. Deleting a
+stack therefore requires an explicit operational decision and does not erase its
+retained records. The code release bucket is separate and publicly readable;
+application data buckets block public access.
+
+Archiving a timeline is an owner-console lifecycle change, not permission to erase
+signed history. It revokes its private grants and prevents new appends. Revoking
+an access document publishes empty lists. Public records cannot be made secret
+retroactively. Unreachable snapshots left by failed commits may be cleaned up only
+with a process that proves they are not referenced by a retained state pointer or
+backup.
+
+AWS charges apply for API calls, Lambda, Secrets Manager, storage and logs. There
+is no always-on server. The template uses a modest API throttle; adjust it with
+observed latency and load. Monitor Lambda errors/duration and DynamoDB conditional
+conflicts before raising concurrency or traffic.
+
+## Verified release
+
+The provider was exercised on AWS with owner and anonymous requests, Ed25519
+private reads, pagination, entry attestations, access updates and revocation.
+A separate keyless reader verified the public access history. Local tests cover
+restart recovery, compare-and-swap conflicts, lost responses, historical retries,
+unique timestamps and an independent reader that has not preloaded the checkpoint
+head. The owner console was also checked in a browser.
+
+The deployed Coordination archive is byte-for-byte identical to the promoted
+`blue-coordination` 0.2.0-rc.2 package. Its 91 protocol tests passed; the provider has
+21 passing tests, including rejected identity changes, provider identity and endpoint persistence, cold console reads, view freshness after another
+writer's revocation, snapshot migration and secret-refresh cache retention.
+The eight migrated consumer packages reproduced exactly, and
+the shared package integrity check verified 18 distributions and 889 source files.

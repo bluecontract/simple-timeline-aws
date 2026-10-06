@@ -1,0 +1,10 @@
+{
+  "name": "Source",
+  "description": "Authenticated submission provenance, not a provider URL.",
+  "context": {
+    "description": "Exact submission context. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

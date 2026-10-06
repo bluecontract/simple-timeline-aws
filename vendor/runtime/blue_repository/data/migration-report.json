@@ -1,0 +1,341 @@
+{
+  "format": "blue-python-repository-migration/1",
+  "source": "sha256:33459a197b5dbce6168a2804c7677f4255e045b337b63d22b087810ab94a47c2",
+  "templateRewrites": [
+    {
+      "owner": "53VxS4ab5Jtdpynb4mw5BRJx2KWbQAP3p5KUDzxfDkbx",
+      "path": "/steps/0/do/2/$returnIf/expr/events/0",
+      "action": "typed-template-to-object-construction",
+      "resultType": "6jcAKEeVpGCPenpSnfwwamL2iTHBACRXPFQjEDU5pX1y"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/completePaymentImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "A6ju5jCNdPU83nB2EJ19VE2r3d1XPgWQygPcohuRzxMa"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/declineCancelBeforeCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "3D5EMr4Yu2pD4z1CSUsj7kKPa28NGq6BDwU8jhFufZir"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/declineCompletePaymentImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "Zi87ggCGvyvyC6BkE6fGfRApCKSEWvwZBzq6kr66Gxz"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/declineReverseAfterCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "HBT721eA6MjEL4s9T3ZkmTR3GtSAMQ4yYpXQRt1v4Huh"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/declineSecureFundsImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "CBGbBbRr8BXEZeWeTHtNucALN7jcjHBsHgV8wCkqzgFg"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failCancelBeforeCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "FzLb75BhpSDKvmnvLRp5VHC7WxszSJWhDUeLYFsG7kyK"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failCompletePaymentImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "Ex5Js1G5Q28DiqxHpMkcnPg69efQZWJqUZmTy6Rkenit"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failPaymentCompletionLockChangeImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "AUyPeDTYbjKsLYHVka8VzsH6mPR3wDDunfCFgzuimFTD"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failPaymentReversalLockChangeImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "FRi3kr6DcW6i7R65yh9YCDhVcU6mCyf2JkEVDkBkZsFa"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failReverseAfterCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "GodTmBkeiAhmTYR9gCF4zMnYYauDz2SgUFhwHGCFXRXU"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failSecureFundsImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "AcV3s6B6heDQVQEMEA4xgtRY3VUtUxqKSVuioBt2pFLp"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failTransactionDetailsUpdateImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "CLStrVwhFuEXAd4aurmgiHZgBH6RwzmGrN4VTkMA8t4U"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/failTransactionDetailsUpdateLockChangeImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "FdqDUfAWCuXX76FATG65canUKGYJChbbzhUfnx3U87eH"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/lockPaymentCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "5ay51sajCxDRM5w88w7vKqaFPQN2yqok2wMmFQynLLn"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/lockPaymentReversalImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "7HHy9Zt3Ma5w7HRFHJRLK87L2F3zZsC8rWYXjWjcuzS7"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/lockTransactionDetailsUpdateImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "7eWohnCAiaeDM9w3Ta53HFzNfZ632TRi1QvEC4CWq5dp"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/recordTransactionInitiationFailedImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "GuqdDWWRhjXQaHEk45Gdfgia1m6Dp5FS3bEaYXCDe16y"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/rejectFinalAmountResolutionImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "9Een3TcB61qehAjz4NcDdPeBGztoq78JGH6KuhfYjhsZ"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/rejectPayeeAssignmentImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "B9jHNiJW5Dm5vBR3mM9LDSeaYLGw67pKvwMVrrnrLUxq"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/rejectTransactionDetailsUpdateImpl/steps/0/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "J6Eku9sEFgBuG19nxYTWzvdyM9fDbxf59waQj5hz712H"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/resolveFinalAmountImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "6LmhFAV7hQwAAS1GFeDkuy6ZPhuSAedBoREUDiTLbS8M"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/reverseAfterCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "J3JY5m2ZQL6nJpeT1fvWxpUb4iuLzrh19fSY1zzbWesE"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/secureFundsImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "D4GFzYxsfR62ScEkmAAfM5EbRRvZWT3Sw6HjUjLLDugu"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/unlockPaymentCompletionImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "3CvQdp7L5VYsjdP9Wj4tjaobejkpv6VQCry4LoT2vMYw"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/unlockPaymentReversalImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "2FrLTP891JHVyWKycAy5DkXS1VwAd8piEvX1vZvng2WF"
+    },
+    {
+      "owner": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "path": "/contracts/unlockTransactionDetailsUpdateImpl/steps/1/do/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "9Ly4TDBSioFwQGRYZjXFrYToUKYmFsK935PRcVTFwkqA"
+    },
+    {
+      "owner": "8NCXF81TcYzSWzFLZikadKL6HaBhg52aPimCgpT4tAWN",
+      "path": "/steps/0/functions/invalid/expr/events/0",
+      "action": "typed-template-to-object-construction",
+      "resultType": "6jcAKEeVpGCPenpSnfwwamL2iTHBACRXPFQjEDU5pX1y"
+    },
+    {
+      "owner": "8NCXF81TcYzSWzFLZikadKL6HaBhg52aPimCgpT4tAWN",
+      "path": "/steps/0/functions/normalizeSection/do/1/$return/$merge/1",
+      "action": "typed-template-to-object-construction",
+      "resultType": "49FkvoroMFDXeLaW1nogxoMwEkPPXwYb7CMjYdmzGpz4"
+    },
+    {
+      "owner": "AYfsKbZoFKeLwyWKp7JeneroYxCSe2xdi1GF8M3ccijS",
+      "path": "/steps/0/do/1/$returnIf/expr/events/0",
+      "action": "typed-template-to-object-construction",
+      "resultType": "6jcAKEeVpGCPenpSnfwwamL2iTHBACRXPFQjEDU5pX1y"
+    },
+    {
+      "owner": "BoZJ1PFmM5y87ZrcayXT6LyfFSR8HFepoxFY1qHqjdoQ",
+      "path": "/contracts/authorizeSpendImpl/steps/0/do/6/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "3EntoP5XrNopV3NbvmE3G5JVTS2jEBJShutsCeFVpBqw"
+    },
+    {
+      "owner": "BoZJ1PFmM5y87ZrcayXT6LyfFSR8HFepoxFY1qHqjdoQ",
+      "path": "/contracts/settleSpendImpl/steps/0/do/6/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "Fms2mDEn9zx1eQgPKmTKcfYejFZ9SZrgNqP7eWVmReDi"
+    },
+    {
+      "owner": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "path": "/contracts/acceptPayNoteImpl/steps/0/functions/accept/do/5/$if/else/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "FR7p4QLk7jBBdXGzTwYN2KAeBx6gVGf9kTyF4pn45wLE"
+    },
+    {
+      "owner": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "path": "/contracts/acceptPayNoteImpl/steps/0/functions/accept/do/5/$if/then/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "9ST1DLJxByDzvtdeJt8SFeZadSYokstVbWYcGVXnrEzk"
+    },
+    {
+      "owner": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "path": "/contracts/rejectPayNoteImpl/steps/0/functions/reject/do/5/$if/else/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "FR7p4QLk7jBBdXGzTwYN2KAeBx6gVGf9kTyF4pn45wLE"
+    },
+    {
+      "owner": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "path": "/contracts/rejectPayNoteImpl/steps/0/functions/reject/do/5/$if/then/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "7jrHNe8HAs3LiLz5hmTZsAHCNwEaVNXQHf5ZomHVyVZC"
+    },
+    {
+      "owner": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "path": "/contracts/reportDeliveryErrorImpl/steps/0/do/1/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "GJhhepPZcpJxJjNrFscPYJCaUQN8EgvXVZDobduzhSKy"
+    },
+    {
+      "owner": "DJK5iUSc4zrJAqVhxArxCBJMR4Ln6RjgqC9rda8Z4Ddq",
+      "path": "/contracts/revokeConsentImpl/steps/0/do/1/$if/then/0/$appendEvent",
+      "action": "typed-template-to-object-construction",
+      "resultType": "BffmfCSM6r3GgrQU9XK3Qaj83gw4H8rfa1N7gXuab1ma"
+    },
+    {
+      "owner": "HEzvLr2yV1VWWN1zGMfJuKRurg2eYLuiacjKgVcfv7fr",
+      "path": "/steps/0/functions/invalid/expr/events/0",
+      "action": "typed-template-to-object-construction",
+      "resultType": "6jcAKEeVpGCPenpSnfwwamL2iTHBACRXPFQjEDU5pX1y"
+    },
+    {
+      "owner": "HEzvLr2yV1VWWN1zGMfJuKRurg2eYLuiacjKgVcfv7fr",
+      "path": "/steps/0/functions/normalizeSection/do/1/$return/$merge/1",
+      "action": "typed-template-to-object-construction",
+      "resultType": "49FkvoroMFDXeLaW1nogxoMwEkPPXwYb7CMjYdmzGpz4"
+    }
+  ],
+  "changedAliases": [
+    {
+      "name": "PayNote/Card Transaction PayNote",
+      "before": "2rytTGYuZaezyLjApvPBV3YP4ciLKmPGax2SVY9DgUCw",
+      "after": "HrWvhNEXaAbBWCUfF4mWaGFCfENjK34GNJ79CD45uaBg"
+    },
+    {
+      "name": "PayNote/Merchant To Customer PayNote",
+      "before": "9hT3H1EcZmaoUF8ZKKWb4CWVWyMdbLHbEvji4XoZWDV9",
+      "after": "AEacV6pLgK1D4xxa1Mpi5ekuvbCM2coi7LFf7qcRn7fG"
+    },
+    {
+      "name": "PayNote/PayNote",
+      "before": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "after": "3F94YKi4j4WNhVn6K5Qbpk1HB4mPZFykthM3upHvCv9K"
+    },
+    {
+      "name": "PayNote/PayNote Delivery",
+      "before": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "after": "FrPGdfKrUUD1Ys5DFYgheCVqx3Ji3qyDimcREsNy6Xvz"
+    },
+    {
+      "name": "PayNote/Payment Mandate",
+      "before": "BoZJ1PFmM5y87ZrcayXT6LyfFSR8HFepoxFY1qHqjdoQ",
+      "after": "HbBgP9JTr5XHDb1YRFuaSbouPTd2ozM3afST7fEMqwqo"
+    },
+    {
+      "name": "Workflows/Accept Change Workflow",
+      "before": "HEzvLr2yV1VWWN1zGMfJuKRurg2eYLuiacjKgVcfv7fr",
+      "after": "FxRDX1PNgpLhhxUGnMCf652RpuEUzrnPpdjpqq2GLpTB"
+    },
+    {
+      "name": "Workflows/Change Workflow",
+      "before": "8NCXF81TcYzSWzFLZikadKL6HaBhg52aPimCgpT4tAWN",
+      "after": "nx5LNsyBTCn2jGvwf9EHQW6fRVipiPF3AnQCCR63nQK"
+    },
+    {
+      "name": "Workflows/Customer Consent",
+      "before": "DJK5iUSc4zrJAqVhxArxCBJMR4Ln6RjgqC9rda8Z4Ddq",
+      "after": "FDgtto5grrsrMAmjYpgJpRy9UWmKvcCfTbDSYZpDdtgq"
+    },
+    {
+      "name": "Workflows/Propose Change Workflow",
+      "before": "53VxS4ab5Jtdpynb4mw5BRJx2KWbQAP3p5KUDzxfDkbx",
+      "after": "8YGhefRLje4Fmp4KXo5mkzxT9ow45e8aQQKx9RMFrWba"
+    },
+    {
+      "name": "Workflows/Reject Change Workflow",
+      "before": "AYfsKbZoFKeLwyWKp7JeneroYxCSe2xdi1GF8M3ccijS",
+      "after": "7Vueqk62D8swzaNvqNRqdbtefLngwBcn6Aub9fp9hdTw"
+    }
+  ],
+  "changedRecords": [
+    {
+      "before": "2rytTGYuZaezyLjApvPBV3YP4ciLKmPGax2SVY9DgUCw",
+      "after": "HrWvhNEXaAbBWCUfF4mWaGFCfENjK34GNJ79CD45uaBg"
+    },
+    {
+      "before": "53VxS4ab5Jtdpynb4mw5BRJx2KWbQAP3p5KUDzxfDkbx",
+      "after": "8YGhefRLje4Fmp4KXo5mkzxT9ow45e8aQQKx9RMFrWba"
+    },
+    {
+      "before": "55X22NGwhbLqnj5aYjKvYzZe2ZcH3H3tNFz99vRVUnzr",
+      "after": "3F94YKi4j4WNhVn6K5Qbpk1HB4mPZFykthM3upHvCv9K"
+    },
+    {
+      "before": "8NCXF81TcYzSWzFLZikadKL6HaBhg52aPimCgpT4tAWN",
+      "after": "nx5LNsyBTCn2jGvwf9EHQW6fRVipiPF3AnQCCR63nQK"
+    },
+    {
+      "before": "9hT3H1EcZmaoUF8ZKKWb4CWVWyMdbLHbEvji4XoZWDV9",
+      "after": "AEacV6pLgK1D4xxa1Mpi5ekuvbCM2coi7LFf7qcRn7fG"
+    },
+    {
+      "before": "AYfsKbZoFKeLwyWKp7JeneroYxCSe2xdi1GF8M3ccijS",
+      "after": "7Vueqk62D8swzaNvqNRqdbtefLngwBcn6Aub9fp9hdTw"
+    },
+    {
+      "before": "BoZJ1PFmM5y87ZrcayXT6LyfFSR8HFepoxFY1qHqjdoQ",
+      "after": "HbBgP9JTr5XHDb1YRFuaSbouPTd2ozM3afST7fEMqwqo"
+    },
+    {
+      "before": "D4yEDNwUXZAEBvTpPnRgiwspZrF6Va78agNV4jY2TEFe",
+      "after": "FrPGdfKrUUD1Ys5DFYgheCVqx3Ji3qyDimcREsNy6Xvz"
+    },
+    {
+      "before": "DJK5iUSc4zrJAqVhxArxCBJMR4Ln6RjgqC9rda8Z4Ddq",
+      "after": "FDgtto5grrsrMAmjYpgJpRy9UWmKvcCfTbDSYZpDdtgq"
+    },
+    {
+      "before": "HEzvLr2yV1VWWN1zGMfJuKRurg2eYLuiacjKgVcfv7fr",
+      "after": "FxRDX1PNgpLhhxUGnMCf652RpuEUzrnPpdjpqq2GLpTB"
+    }
+  ],
+  "boundary": "Admission compatibility only; runtime/Java/gas equivalence requires separate execution tests."
+}

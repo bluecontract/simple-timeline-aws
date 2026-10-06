@@ -1,0 +1,43 @@
+{
+  "name": "Timeline Stream Batch",
+  "description": "Complete announcements for the stream-bound sources in [fromInclusive, completeBefore).",
+  "stream": {
+    "type": "Coordination/Timeline Update Stream",
+    "schema": {
+      "required": true
+    }
+  },
+  "sequence": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0
+    }
+  },
+  "fromInclusive": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740990
+    }
+  },
+  "completeBefore": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "announcements": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Timeline Announcement"
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

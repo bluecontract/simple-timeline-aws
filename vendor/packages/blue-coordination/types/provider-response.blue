@@ -1,0 +1,13 @@
+{
+  "name": "Provider Response",
+  "description": "Response correlated through an exact Blue reference to its request. The outer attestation identifies the provider.",
+  "request": {
+    "type": "Coordination/Provider Request",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

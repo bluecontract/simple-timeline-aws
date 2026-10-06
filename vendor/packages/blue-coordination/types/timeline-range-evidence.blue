@@ -1,0 +1,23 @@
+{
+  "name": "Timeline Range Evidence",
+  "description": "Assembled contiguous range through the attested prefix head, not a physical page.",
+  "checkpoint": {
+    "type": "Coordination/Timeline Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "entries": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Timeline Entry"
+  },
+  "after": {
+    "description": "Previously established Timeline Entry anchor. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Order Key",
+  "description": "Canonical order across timelines; identifiers compare as ASCII bytes.",
+  "timestamp": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740990
+    }
+  },
+  "entry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

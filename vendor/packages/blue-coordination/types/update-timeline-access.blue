@@ -1,0 +1,142 @@
+{
+  "name": "Update Timeline Access",
+  "type": "Contracts/Sequential Workflow Operation",
+  "description": "Provider-channel operation replacing both access sets atomically, using ordinary Contracts execution.",
+  "channel": "provider",
+  "request": {
+    "type": "Coordination/Timeline Access Update"
+  },
+  "steps": [
+    {
+      "type": "Contracts/Compute",
+      "do": [
+        {
+          "$failIf": {
+            "cond": {
+              "$some": {
+                "in": {
+                  "$binding": "call/request/allowedTimelines"
+                },
+                "item": "candidate",
+                "where": {
+                  "$ne": [
+                    {
+                      "$pointerGet": {
+                        "object": {
+                          "$var": "candidate"
+                        },
+                        "path": "/provider"
+                      }
+                    },
+                    {
+                      "$document": "/contracts/provider/provider"
+                    }
+                  ]
+                }
+              }
+            },
+            "message": "FOREIGN_TIMELINE"
+          }
+        },
+        {
+          "$failIf": {
+            "cond": {
+              "$some": {
+                "in": {
+                  "$binding": "call/request/allowedTimelines"
+                },
+                "item": "candidate",
+                "where": {
+                  "$gt": [
+                    {
+                      "$size": {
+                        "$filter": {
+                          "in": {
+                            "$binding": "call/request/allowedTimelines"
+                          },
+                          "item": "other",
+                          "where": {
+                            "$eq": [
+                              {
+                                "$var": "candidate"
+                              },
+                              {
+                                "$var": "other"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    1
+                  ]
+                }
+              }
+            },
+            "message": "DUPLICATE_ACCESS_VALUE"
+          }
+        },
+        {
+          "$failIf": {
+            "cond": {
+              "$some": {
+                "in": {
+                  "$binding": "call/request/allowedKeys"
+                },
+                "item": "candidate",
+                "where": {
+                  "$gt": [
+                    {
+                      "$size": {
+                        "$filter": {
+                          "in": {
+                            "$binding": "call/request/allowedKeys"
+                          },
+                          "item": "other",
+                          "where": {
+                            "$eq": [
+                              {
+                                "$var": "candidate"
+                              },
+                              {
+                                "$var": "other"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    1
+                  ]
+                }
+              }
+            },
+            "message": "DUPLICATE_ACCESS_VALUE"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Contracts/Update Document",
+      "changeset": [
+        {
+          "op": "replace",
+          "path": "/allowedTimelines",
+          "val": {
+            "$binding": "call/request/allowedTimelines"
+          }
+        },
+        {
+          "op": "replace",
+          "path": "/allowedKeys",
+          "val": {
+            "$binding": "call/request/allowedKeys"
+          }
+        }
+      ]
+    }
+  ],
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Stream Binding Response",
+  "description": "Authenticated immutable assignment; absence is not completeness.",
+  "type": "Coordination/Provider Response",
+  "binding": {
+    "type": "Coordination/Timeline Stream Binding",
+    "schema": {
+      "required": true
+    }
+  },
+  "bindingAttestation": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

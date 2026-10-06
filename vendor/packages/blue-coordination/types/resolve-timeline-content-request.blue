@@ -1,0 +1,17 @@
+{
+  "name": "Resolve Timeline Content Request",
+  "description": "Resolve exact reachable content under timeline-scoped authorization.",
+  "type": "Coordination/Provider Request",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "content": {
+    "description": "Exact Blue reference to the content."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

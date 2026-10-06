@@ -1,0 +1,8 @@
+{
+  "name": "Principal Actor",
+  "description": "A human actor. Extend this type with the identifying details appropriate to the domain.",
+  "type": "Coordination/Actor",
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

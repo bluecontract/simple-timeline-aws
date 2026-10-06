@@ -1,0 +1,13 @@
+{
+  "name": "Get Timeline Access Request",
+  "type": "Coordination/Provider Request",
+  "access": {
+    "type": "Coordination/Timeline Access",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

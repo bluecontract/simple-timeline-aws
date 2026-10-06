@@ -1,0 +1,28 @@
+{
+  "name": "Package",
+  "description": "The ordinary standard Blue package type. Its root is admitted in definition role because exports identify reusable definitions. Package-role verification validates the complete manifest and every export separately; there is no special package hashing or resolver branch.",
+  "format": {
+    "type": "Text"
+  },
+  "version": {
+    "type": "Text"
+  },
+  "identityProfile": {
+    "type": "Text"
+  },
+  "bootstrapLanguage": {
+    "type": "Boolean"
+  },
+  "exports": {
+    "type": "Dictionary"
+  },
+  "imports": {
+    "type": "Dictionary"
+  },
+  "declaredRequirements": {
+    "type": "List"
+  },
+  "documentation": {
+    "type": "Dictionary"
+  }
+}

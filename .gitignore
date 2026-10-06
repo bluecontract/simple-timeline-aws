@@ -1,0 +1,14 @@
+.local/
+.work/
+__pycache__/
+*.pyc
+.venv/
+build/
+node_modules/
+.env
+aws-access.properties
+
+.idea/
+.DS_Store/
+.env.*
+!.env.example

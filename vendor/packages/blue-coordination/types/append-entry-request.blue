@@ -1,0 +1,27 @@
+{
+  "name": "Append Entry Request",
+  "description": "Optional owner-ingest extension. Owner-only submission of the original message.",
+  "type": "Coordination/Provider Request",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "message": {
+    "description": "Required exact original message, resolved and validated by the provider."
+  },
+  "expectedLastEntry": {
+    "description": "Expected Timeline Entry head. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "idempotencyKey": {
+    "type": "Text",
+    "schema": {
+      "required": true,
+      "minLength": 1
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Protocol Specification",
+  "description": "Ordinary standard description of exact normative rules and their prerequisites. Its nativeSpecification may name an existing runtime rules Text; rules may also include the complete selected publication and a separately bound scheduling policy. Loading content does not install a processor.",
+  "status": {
+    "type": "Text"
+  },
+  "requires": {
+    "type": "Dictionary"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Timeline Entries Page",
+  "description": "A page within a permanently sealed prefix. hasMore=false exhausts the selected suffix before checkpoint.completeBefore; no later entry can be inserted there.",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "checkpoint": {
+    "type": "Coordination/Timeline Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "entries": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Timeline Entry"
+  },
+  "predecessor": {
+    "description": "Immediate Timeline Entry before returned suffix. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "hasMore": {
+    "type": "Boolean",
+    "schema": {
+      "required": true
+    }
+  },
+  "nextCursor": {
+    "description": "Timeline Read Cursor; present exactly when hasMore is true. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

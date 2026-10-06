@@ -1,0 +1,25 @@
+{
+  "name": "Timeline Attestation",
+  "description": "Signature of the exact guarantee under the dedicated guarantee domain.",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "guarantee": {
+    "type": "Coordination/Timeline Completeness Guarantee",
+    "schema": {
+      "required": true
+    }
+  },
+  "signature": {
+    "type": "Coordination/Ed25519 Signature",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

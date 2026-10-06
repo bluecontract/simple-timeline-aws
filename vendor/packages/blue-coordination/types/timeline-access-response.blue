@@ -1,0 +1,32 @@
+{
+  "name": "Timeline Access Response",
+  "type": "Coordination/Provider Response",
+  "description": "Original access document, current executed document, public publication proof and latest relevant entry. Freshness requires complete public history.",
+  "access": {
+    "type": "Coordination/Timeline Access",
+    "schema": {
+      "required": true
+    }
+  },
+  "current": {
+    "type": "Coordination/Timeline Access",
+    "schema": {
+      "required": true
+    }
+  },
+  "publication": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "lastEntry": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

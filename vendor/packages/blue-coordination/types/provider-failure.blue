@@ -1,0 +1,24 @@
+{
+  "name": "Provider Failure",
+  "description": "Typed error; never a proof of absent entries or revoked access.",
+  "type": "Coordination/Provider Response",
+  "code": {
+    "type": "Text",
+    "schema": {
+      "required": true,
+      "minLength": 1
+    }
+  },
+  "retryable": {
+    "type": "Boolean",
+    "schema": {
+      "required": true
+    }
+  },
+  "detail": {
+    "description": "Text safe diagnostic. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

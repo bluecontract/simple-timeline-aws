@@ -1,0 +1,33 @@
+{
+  "name": "Input Selection",
+  "description": "Evidence-bearing selection description for a Contracts adapter, not an execution proof.",
+  "entry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "orderKey": {
+    "type": "Coordination/Order Key",
+    "schema": {
+      "required": true
+    }
+  },
+  "sourceSetVersion": {
+    "type": "Text",
+    "schema": {
+      "required": true,
+      "minLength": 1
+    }
+  },
+  "coverage": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Source Coverage"
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "providerSha256": "b7352825c9b272f98d922ccc4e61dadea2cc7c3dbfc09974e3c83afa1b77ed2a",
+  "javaRepositoryBlueId": "FvABA6GYzprFcB8MHydnvrcaL5yFLvTH1vC9y9JWpt6w",
+  "namedJavaTypes": 1108,
+  "aliasesWithContracts": 1133,
+  "records": 1139,
+  "cyclicSets": [
+    {
+      "master": "2cYT8tD8PndDW8whheE2SsN27ZbzHHcHC8fqsZaZXBS6",
+      "members": 3,
+      "status": "PASS"
+    },
+    {
+      "master": "2yTaapLW5u3tErCszoyXXDFrsziv3SWvabfzKQAmjwmR",
+      "members": 1,
+      "status": "PASS"
+    },
+    {
+      "master": "4PomKHd5RQDs3gKG4uKXCAUX2cCJjzWQYPfeyFT6zyKv",
+      "members": 4,
+      "status": "PASS"
+    },
+    {
+      "master": "5dWnsFbYwSdUQ3PVJWpq2NxYRknhmaGNc7BQQi14kcE9",
+      "members": 10,
+      "status": "PASS"
+    },
+    {
+      "master": "6CbvNDFuyte8aeziYSEhGNZ67FtoQfBVBjdYC8yiLVG6",
+      "members": 1,
+      "status": "PASS"
+    },
+    {
+      "master": "6EEsLbZJVFFADgNYZbzLAETyrak4YRSxKX8m7ECPhWoH",
+      "members": 1,
+      "status": "PASS"
+    },
+    {
+      "master": "6zfsssMXw4XRMC7TGyBpZY1DAwmAtJ1wrvviano3dUQb",
+      "members": 1,
+      "status": "PASS"
+    },
+    {
+      "master": "8mSjnRHr78AivwxBB2cQJDm7okhUDSWhBw4Cc8daTEc4",
+      "members": 3,
+      "status": "PASS"
+    },
+    {
+      "master": "BrQtMK2J2C5fLhkC9rfjDjnzvAGaNoS48x83MX6oCn57",
+      "members": 1,
+      "status": "PASS"
+    },
+    {
+      "master": "GCmS7M1BiCMbhWc3uBALbXAaaTnvFYyrjHWM8vVR3Y8K",
+      "members": 2,
+      "status": "PASS"
+    }
+  ],
+  "carrierCanonicalizations": [
+    {
+      "blueId": "Gpw3zDUDENr9thYruxb1S1firzfQSgHYJs5W3zaBbAzN",
+      "name": "FINOS-CDM-6.0-d07/cdm/base/datetime/BusinessCenterEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "DcdNVPHaDXp3kB4voaW5oMavXyuKPnVfULcMDUkQXoZa",
+      "name": "FINOS-CDM-6.0-d07/cdm/base/datetime/CommodityBusinessCalendarEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "GxfgSxqafB73DXXwjJx4sXU3P96NoGFSnDx7p4Z9L14d",
+      "name": "FINOS-CDM-6.0-d07/cdm/base/datetime/RollConventionEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "7rLpateRXSy3RdPsPEUcip227zNh4gMbVPQ1GuqDksDz",
+      "name": "FINOS-CDM-6.0-d07/cdm/base/datetime/daycount/DayCountFractionEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "vMjyu6sbtgT7FA6GScxrp32Njg3k9oW6KxuXLU9RYHx",
+      "name": "FINOS-CDM-6.0-d07/cdm/base/staticdata/asset/rates/FloatingRateIndexEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "FUgVmRR9na7tWB1PaaAckCtpr6nHKGUnZTW5VNn5xUKm",
+      "name": "FINOS-CDM-6.0-d07/cdm/legaldocumentation/master/MasterConfirmationTypeEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "DzpY5RUNUovhmzgtT5VaT1W4axHNNoTZ2da1YgZrdg6Z",
+      "name": "FINOS-CDM-6.0-d07/cdm/observable/asset/CommodityReferencePriceEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "EwUsZoM9DmKcQmfrnDG5YCv3bF338gxD6n6WWJmgGirC",
+      "name": "FINOS-CDM-6.0-d07/cdm/observable/asset/SettlementRateOptionEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "993FmQYp1qquePHed4gzqEGk6TiscurtZ7ryZqKvXoov",
+      "name": "FINOS-CDM-6.0-d07/cdm/observable/asset/fro/FloatingRateIndexCalculationMethodEnum",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "7HZ6UDNxDdGdvhowi92mwB4EAqKfeynpJEFUFVvjmTJ2",
+      "name": "Document Update",
+      "action": "canonical schema enum order; published ID preserved"
+    },
+    {
+      "blueId": "5UihWoxkyiUbv9TZk7HcHsa82sz2R3ex1WifQQpKtHpP",
+      "name": "Json Patch Entry",
+      "action": "canonical schema enum order; published ID preserved"
+    }
+  ],
+  "note": "Exact content verification, not whole semantic admission."
+}

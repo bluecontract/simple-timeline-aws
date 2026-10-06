@@ -1,0 +1,23 @@
+{
+  "name": "Timeline Successor Evidence",
+  "description": "Authenticated accepted successor proves the prefix strictly before its timestamp.",
+  "successor": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "entries": {
+    "type": "List",
+    "schema": {
+      "required": true
+    },
+    "itemType": "Coordination/Timeline Entry"
+  },
+  "after": {
+    "description": "Previously established Timeline Entry anchor. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

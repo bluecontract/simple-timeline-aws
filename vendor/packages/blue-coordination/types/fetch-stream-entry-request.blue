@@ -1,0 +1,27 @@
+{
+  "name": "Fetch Stream Entry Request",
+  "description": "Authorized opening of one announcement by exact feed entry and row.",
+  "type": "Coordination/Provider Request",
+  "binding": {
+    "type": "Coordination/Timeline Stream Binding",
+    "schema": {
+      "required": true
+    }
+  },
+  "batchEntry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "announcementIndex": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

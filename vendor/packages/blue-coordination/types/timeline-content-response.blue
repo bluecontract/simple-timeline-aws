@@ -1,0 +1,11 @@
+{
+  "name": "Timeline Content Response",
+  "description": "Exact verified content at the requested BlueId.",
+  "type": "Coordination/Provider Response",
+  "content": {
+    "description": "Required exact content matching the requested content reference."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

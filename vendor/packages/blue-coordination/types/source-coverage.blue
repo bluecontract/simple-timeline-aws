@@ -1,0 +1,27 @@
+{
+  "name": "Source Coverage",
+  "description": "Verifier-established source frontier and evidence; not a caller claim of readiness.",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "completeBefore": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "lastEntry": {
+    "description": "Exact Timeline Entry at the established prefix head. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "evidence": {
+    "description": "Required exact Timeline Range Evidence, Timeline Successor Evidence or Timeline Stream Evidence."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

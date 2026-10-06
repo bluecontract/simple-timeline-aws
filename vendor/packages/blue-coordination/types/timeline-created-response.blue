@@ -1,0 +1,14 @@
+{
+  "name": "Timeline Created Response",
+  "description": "Optional owner-ingest extension. The exact durable created source.",
+  "type": "Coordination/Provider Response",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

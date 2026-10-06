@@ -1,0 +1,20 @@
+{
+  "name": "Timeline Entry Response",
+  "description": "Exact retrieved entry and reusable acceptance attestation.",
+  "type": "Coordination/Provider Response",
+  "entry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "entryAttestation": {
+    "type": "Coordination/Provider Attestation",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Fetch Timeline Entry Request",
+  "description": "Exact-entry read subject to current read access.",
+  "type": "Coordination/Provider Request",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "entry": {
+    "type": "Coordination/Timeline Entry",
+    "schema": {
+      "required": true
+    }
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}

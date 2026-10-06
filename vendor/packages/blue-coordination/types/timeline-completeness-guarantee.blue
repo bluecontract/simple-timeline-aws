@@ -1,0 +1,24 @@
+{
+  "name": "Timeline Completeness Guarantee",
+  "description": "No future acceptance below exclusive completeBefore; lastEntry is inside that prefix.",
+  "timeline": {
+    "type": "Coordination/Signed Timeline",
+    "schema": {
+      "required": true
+    }
+  },
+  "completeBefore": {
+    "type": "Integer",
+    "schema": {
+      "required": true,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "lastEntry": {
+    "description": "Reference to last Timeline Entry inside the closed prefix; absent for empty prefix. Optional; presence and exact type are checked by the protocol verifier."
+  },
+  "specification": {
+    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
+  }
+}
