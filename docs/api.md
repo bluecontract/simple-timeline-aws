@@ -132,3 +132,35 @@ The owner console can inspect every stored object. Public `/timelines/content`
 requests can resolve only objects reachable from a public timeline. A private
 object cannot be read merely by knowing its BlueId or asking through an unrelated
 public timeline.
+
+## Owner bootstrap API
+
+Owner endpoints require a valid owner session cookie; mutations also require the
+provider endpoint as `Origin`. A signed reader request does not authorize these
+operations. `GET /owner/overview` and the `overview` in `GET /owner/workspace`
+include `ownerActor`, the exact actor used by owner appends. Read this object
+instead of deriving an actor from a client account name. Existing stored actors,
+including legacy runtime defaults, retain their identity.
+
+`POST /owner/access` accepts `name`, `allowedTimelines`, `allowedKeys`,
+`idempotencyKey`, and the optional Boolean `createOnly` (default `false`). With
+`createOnly: true`, a new request cannot reuse an existing initial access document,
+including one whose current permissions have changed or been revoked. It returns
+HTTP 409 with `error: "ACCESS_ALREADY_EXISTS"` and `retryable: false`, without
+publishing an update or changing permissions or archive metadata. The check runs
+inside the snapshot transaction and is repeated after a compare-and-swap conflict.
+A retry with the same idempotency key and initial access identity still returns
+its own original publication and preserves current permissions. A changed initial
+identity under that key returns `IDEMPOTENCY_CONFLICT`. Callers may explicitly
+adopt a verified suitable existing arrangement, rather than revive it implicitly.
+Calls that omit `createOnly` retain their existing reuse/update behavior.
+
+All application protocol exports resolve package and native Blue types in
+`type`, `itemType`, `keyType`, and `valueType` to exact Blue references. Ordinary
+text values remain unchanged. This boundary conversion preserves document
+identities and signatures and does not require a snapshot or package migration.
+
+Code-only updates through `scripts/deploy.py` retain the stack's existing
+`AdminPassword`, even from a fresh checkout without a local password file. Use
+`--rotate-password` only for an intentional rotation; the generated password is
+saved in `.local/console-password.txt` and existing owner sessions are invalidated.

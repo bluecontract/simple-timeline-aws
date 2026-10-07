@@ -56,3 +56,29 @@ class BootstrapTests(unittest.TestCase):
                 identity_parameters(existing,**{field:'Changed'})
         created=identity_parameters(None,'John Doe','ACME Company','https://acme.example')
         self.assertEqual({p['ParameterKey']:p['ParameterValue'] for p in created},{k:v for k,v in self.identity.items() if k!='Endpoint'})
+
+    def test_code_only_deploy_preserves_password_even_without_local_file(self):
+        import tempfile
+        from pathlib import Path
+        from scripts import deploy
+        aws=MagicMock();aws.client.return_value.get_caller_identity.return_value={'Account':'123'}
+        aws.client.return_value.describe_stacks.return_value={'Stacks':[{'Tags':[{'Key':'Project','Value':'simple-timeline-aws'}],'Parameters':[{'ParameterKey':'AdminPassword','ParameterValue':'****'}]}]}
+        aws.client.return_value.update_stack.return_value={'StackId':'stack'}
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'build').mkdir()
+            release={'sha256':'abc','artifactUrl':'https://artifacts.s3.eu-west-1.amazonaws.com/releases/abc/provider.zip','templateUrl':'https://artifacts/template.json'}
+            (root/'build/release.json').write_text(json.dumps(release))
+            for name in ('provider.zip','template.json'):(root/'build'/name).write_bytes(b'fixture')
+            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts']),patch('builtins.print'):
+                deploy.main()
+            parameters=aws.client.return_value.update_stack.call_args.kwargs['Parameters']
+            self.assertEqual(next(p for p in parameters if p['ParameterKey']=='AdminPassword'),{'ParameterKey':'AdminPassword','UsePreviousValue':True})
+            passwordfile=root/'.local/console-password.txt'
+            self.assertFalse(passwordfile.exists())
+            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts','--rotate-password']),patch('builtins.print'):
+                deploy.main()
+            parameters=aws.client.return_value.update_stack.call_args.kwargs['Parameters']
+            rotated=next(p for p in parameters if p['ParameterKey']=='AdminPassword')
+            self.assertEqual(rotated,{'ParameterKey':'AdminPassword','ParameterValue':passwordfile.read_text().strip()})
+            self.assertGreater(len(rotated['ParameterValue']),20)
+            self.assertEqual(passwordfile.stat().st_mode & 0o777,0o600)

@@ -66,7 +66,7 @@ def owner_route(c,method,path,body,query):
         entry=c.append(m[1],body['message'],key,body.get('expectedLastEntry'))
         return {'blueId':c.e.identity(entry),'entry':c.export(entry)}
     if m and method=='DELETE' and not m[2]:return c.archive_timeline(m[1],key)
-    if method=='POST' and path=='/owner/access':return c.create_access(body.get('name'),body.get('allowedTimelines'),body.get('allowedKeys'),key)
+    if method=='POST' and path=='/owner/access':return c.create_access(body.get('name'),body.get('allowedTimelines'),body.get('allowedKeys'),key,create_only=body.get('createOnly',False))
     m=re.fullmatch('/owner/access/([^/]+)',path)
     if m and method=='PUT':return c.update_access(m[1],body.get('allowedTimelines'),body.get('allowedKeys'),key)
     if m and method=='DELETE':return c.update_access(m[1],[],[],key,archived=True)
@@ -122,7 +122,7 @@ def handler(event,context):
     except (ValueError,KeyError,TypeError,RecursionError) as exc:
         code=str(exc).strip("'").split(':',1)[0]
         if not re.fullmatch('[A-Z_]+',code):code='INVALID_REQUEST'
-        status=401 if code=='UNAUTHENTICATED' else 403 if code in ('ACCESS_DENIED','INVALID_SIGNATURE','INVALID_ORIGIN','OWNER_OPERATION') else 404 if code=='NOT_FOUND' else 409 if code in ('IDEMPOTENCY_CONFLICT','HEAD_CONFLICT') else 413 if code=='LIMIT_EXCEEDED' else 400
+        status=401 if code=='UNAUTHENTICATED' else 403 if code in ('ACCESS_DENIED','INVALID_SIGNATURE','INVALID_ORIGIN','OWNER_OPERATION') else 404 if code=='NOT_FOUND' else 409 if code in ('IDEMPOTENCY_CONFLICT','HEAD_CONFLICT','ACCESS_ALREADY_EXISTS') else 413 if code=='LIMIT_EXCEEDED' else 400
         return response(status,{'error':code,'retryable':False},public=public)
     except Exception as exc:
         from algorithms.blue import Failure

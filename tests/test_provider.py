@@ -241,6 +241,10 @@ class ProviderTests(unittest.TestCase):
         workspace=call('/owner/workspace',cookie=cookie);self.assertEqual(workspace['statusCode'],200);self.assertEqual(json.loads(workspace['body'])['overview']['timelineCount'],1)
         created=call('/owner/timelines','POST',{'name':'Public','publicRead':True,'idempotencyKey':'http-create'},cookie)
         self.assertEqual(created['statusCode'],200);tid=json.loads(created['body'])['blueId']
+        grant={'name':'Readers','allowedTimelines':[tid],'allowedKeys':['22'*32],'idempotencyKey':'http-grant','createOnly':True}
+        self.assertEqual(call('/owner/access','POST',grant,cookie)['statusCode'],200)
+        collision=call('/owner/access','POST',dict(grant,idempotencyKey='http-other'),cookie)
+        self.assertEqual(collision['statusCode'],409);self.assertEqual(json.loads(collision['body'])['error'],'ACCESS_ALREADY_EXISTS')
         denied=call('/owner/timelines/'+tid+'/entries','POST',{'message':'Denied','idempotencyKey':'deny'})
         self.assertEqual(denied['statusCode'],401)
         self.assertEqual(call('/owner/timelines/'+tid+'/entries','POST',{'message':'Hello','idempotencyKey':'http-entry'},cookie)['statusCode'],200)
