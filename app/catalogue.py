@@ -108,7 +108,7 @@ class Catalogue:
 
     def summary(self):
         return {'provider':self.export(self.p.provider),'providerBlueId':self.p.pid,'endpoint':self.endpoint,
-                'providerDetails':self.provider_details,'ownerActor':self.export(self.e.get(self.p.state.get('actors',{}).get('owner',{'type':'Coordination/Principal Actor','displayName':'owner'}))),
+                'providerDetails':self.provider_details,
                 'controlTimeline':self.e.identity(self.control),'timelineCount':len(self.ui['timelines']),
                 'entryCount':sum(len(x['entries']) for x in self.p.state['timelines'].values()),
                 'accessCount':len(self.ui['access']),'maxPageSize':MAX_PAGE}
@@ -169,15 +169,10 @@ class Catalogue:
                                 'archived':archived,'current':self.e.identity(run.current())}
         return aid
 
-    def create_access(self,name,timelines,keys,key,create_only=False):
-        check(isinstance(name,str) and 0<len(name.strip())<=120 and type(create_only) is bool,'INVALID_REQUEST')
+    def create_access(self,name,timelines,keys,key):
+        check(isinstance(name,str) and 0<len(name.strip())<=120,'INVALID_REQUEST')
         values=self._access_targets(timelines,keys);self._mutation_key(key)
         replay='owner/access-create/'+key in self.p.state['requests']
-        # Runs inside StateStore.execute, including every retry after CAS loss.
-        if create_only and not replay:
-            from access_runtime import access_document
-            candidate=access_document(self.e,values,keys,self.p.provider,self.e.get(self.control)['url'])
-            check(self.e.identity(candidate) not in self.p.state['access'],'ACCESS_ALREADY_EXISTS')
         access,entry=self.p.create_access('owner',values,keys,key,self.control,now())
         aid=self.e.identity(access);saved=self.p.state['access'][aid]
         if not replay and (saved['timelines']!=timelines or saved['keys']!=keys):

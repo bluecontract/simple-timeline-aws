@@ -15,8 +15,7 @@ class ConsoleView:
         self.view=snapshot['console']
         if self.view['format']!=FORMAT:raise ValueError('INCOMPATIBLE_CONSOLE_VIEW')
         self.workspace=self.wire(self.view['workspace'])
-        actor=snapshot['providerState'].get('actors',{}).get('owner',{'type':'Coordination/Principal Actor','displayName':'owner'})
-        self.workspace['overview']['ownerActor']=self.wire(self.get(actor))
+        self.workspace['overview'].pop('ownerActor',None)
         provider=snapshot['objects'][snapshot['provider']]
         self.workspace['overview']['providerDetails']=resolved_details(snapshot['definition'],provider)
 
