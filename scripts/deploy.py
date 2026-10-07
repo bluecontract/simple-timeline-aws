@@ -27,7 +27,7 @@ def identity_parameters(existing,name=None,company=None,website=None):
     return result
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--credentials');p.add_argument('--region',default='us-east-1');p.add_argument('--account',required=True);p.add_argument('--stack',default='simple-timeline-provider');p.add_argument('--release-bucket',required=True);p.add_argument('--provider-name');p.add_argument('--provider-company');p.add_argument('--provider-website');p.add_argument('--status',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--credentials');p.add_argument('--region',default='us-east-1');p.add_argument('--account',required=True);p.add_argument('--stack',default='simple-timeline-provider');p.add_argument('--release-bucket',required=True);p.add_argument('--provider-name');p.add_argument('--provider-company');p.add_argument('--provider-website');p.add_argument('--status',action='store_true');p.add_argument('--rotate-password',action='store_true',help='Generate and save a new owner password, invalidating existing sessions');a=p.parse_args()
     aws=session(a.credentials,a.region);identity=aws.client('sts').get_caller_identity()
     if identity['Account']!=a.account:raise SystemExit('Credential account does not match --account')
     cfn=aws.client('cloudformation');local=ROOT/'.local';local.mkdir(exist_ok=True);os.chmod(local,0o700)
@@ -68,12 +68,17 @@ def main():
     for filename,mime in [('provider.zip','application/zip'),('template.json','application/json')]:
         s3.put_object(Bucket=a.release_bucket,Key=f'releases/{sha}/{filename}',Body=(ROOT/'build'/filename).read_bytes(),ContentType=mime,CacheControl='public,max-age=31536000,immutable')
     cfn.validate_template(TemplateURL=release['templateUrl'])
-    passwordfile=local/'console-password.txt'
-    if not passwordfile.exists():
-        descriptor=os.open(passwordfile,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-        with os.fdopen(descriptor,'w') as f:f.write(secrets.token_urlsafe(27)+'\n')
-    password=passwordfile.read_text().strip()
-    params=[{'ParameterKey':'AdminPassword','ParameterValue':password},*profile_params]
+    if existing and not a.rotate_password:
+        password_param={'ParameterKey':'AdminPassword','UsePreviousValue':True}
+    else:
+        passwordfile=local/'console-password.txt'
+        if a.rotate_password or not passwordfile.exists():
+            descriptor=os.open(passwordfile,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
+            with os.fdopen(descriptor,'w') as f:
+                os.fchmod(f.fileno(),0o600)
+                f.write(secrets.token_urlsafe(27)+'\n')
+        password_param={'ParameterKey':'AdminPassword','ParameterValue':passwordfile.read_text().strip()}
+    params=[password_param,*profile_params]
     args={'StackName':a.stack,'TemplateURL':release['templateUrl'],'Parameters':params,'Capabilities':['CAPABILITY_IAM'],'Tags':[{'Key':'Project','Value':'simple-timeline-aws'}]}
     if existing:
         try:result=cfn.update_stack(**args)

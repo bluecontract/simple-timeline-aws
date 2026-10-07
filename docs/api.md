@@ -132,3 +132,15 @@ The owner console can inspect every stored object. Public `/timelines/content`
 requests can resolve only objects reachable from a public timeline. A private
 object cannot be read merely by knowing its BlueId or asking through an unrelated
 public timeline.
+
+## Wire compatibility and deployment
+
+All application protocol exports resolve package and native Blue types in
+`type`, `itemType`, `keyType`, and `valueType` to exact Blue references. Ordinary
+text values remain unchanged. This boundary conversion preserves document
+identities and signatures and does not require a snapshot or package migration.
+
+Code-only updates through `scripts/deploy.py` retain the stack's existing
+`AdminPassword`, even from a fresh checkout without a local password file. Use
+`--rotate-password` only for an intentional rotation; the generated password is
+saved in `.local/console-password.txt` and existing owner sessions are invalidated.

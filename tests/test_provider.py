@@ -99,6 +99,68 @@ class ProviderTests(unittest.TestCase):
         cold=StateStore(table,s3,'data','https://provider.example','Example',self.seed)
         retry=cold.execute(lambda c:c.append(tid,'Once','lost-response'),write=True)
         self.assertEqual(first,retry);self.assertEqual(cold.execute(lambda c:c.entries(tid))['total'],1)
+    def test_exact_private_timeline_remains_private_across_append_and_restore(self):
+        from blue_language import CORE
+        c=self.c;t,tid=self.timeline()
+        typed=c.export(t)
+        typed['publicRead']={'type':ref(CORE['Boolean']),'value':False}
+        typed['url']={'type':ref(CORE['Text']),'value':typed['url']}
+        first=c.append(tid,'Private content','first')
+        read=c.p.request('Read Timeline Request',timeline=ref(tid),limit=50)
+        signed=self.signed(read)
+        c.create_access('Readers',[tid],[signed['publicKey']],'grant')
+        requests=[('/timelines/read',read),
+                  ('/timelines/entry',c.p.request('Fetch Timeline Entry Request',timeline=ref(tid),entry=ref(c.e.identity(first)))),
+                  ('/timelines/content',c.p.request('Resolve Timeline Content Request',timeline=ref(tid),content=first['message']))]
+        def denied(provider):
+            for path,request in requests:
+                with self.subTest(path=path):
+                    with self.assertRaises(ProtocolError) as error:
+                        provider.protocol(path,provider.export(request))
+                    self.assertEqual(error.exception.status,401)
+        denied(c)
+        # Same native Boolean value and timeline identity, explicit exact form.
+        appended=c.append(tid,{'timeline':typed},'typed-timeline')
+        self.assertEqual(c.e.identity(typed),tid)
+        denied(c)
+        c.protocol('/timelines/read',signed)
+        unauthorized=self.signed(read,seed=b'\x33'*32)
+        with self.assertRaises(ProtocolError) as error:c.protocol('/timelines/read',unauthorized)
+        self.assertEqual(error.exception.status,403)
+        from algorithms.blue import Failure
+        with self.assertRaises(Failure):
+            c.e.identity(dict(typed,publicRead={'type':ref(CORE['Text']),'value':'false'}))
+        snapshot=c.snapshot()
+        restored=Catalogue(c.endpoint,'Ignored',self.seed,snapshot)
+        denied(restored)
+        response=restored.protocol('/timelines/read',signed)
+        restored.p.verifier.read_response(read,response)
+        self.assertEqual(len(response['object']['page']['entries']),2)
+        self.assertEqual(restored.append(tid,{'timeline':typed},'typed-timeline'),appended)
+        self.assertEqual(restored.p.pid,c.p.pid)
+        self.assertEqual(restored.e.identity(restored.timeline(tid)),tid)
+
+    def test_restore_after_append_of_exact_provider_scalars(self):
+        from blue_language import CORE
+        c=self.c;t,tid=self.timeline()
+        before=c.p.pid
+        # Core exact exports use explicit Text values, with the same BlueId as
+        # this provider's source shorthand. Inline admission stores that form.
+        provider=c.export(c.p.provider)
+        for field in ('displayName','endpoint','publicKey'):
+            provider[field]={'type':ref(CORE['Text']),'value':provider[field]}
+        message={'provider':provider}
+        first=c.append(tid,message,'exact-provider')
+        snapshot=c.snapshot()
+        self.assertEqual(c.e.identity(provider),before)
+        self.assertIsInstance(snapshot['objects'][before]['endpoint'],dict)
+        restored=Catalogue(c.endpoint,'Ignored',self.seed,snapshot)
+        self.assertEqual(restored.p.pid,before)
+        self.assertEqual(restored.append(tid,message,'exact-provider'),first)
+        self.assertEqual(restored.entries(tid)['total'],1)
+        restored.p.verifier.attestation(restored.descriptor())
+        self.assertEqual(restored.endpoint,c.endpoint)
+
     def test_restoration_rejects_changed_runtime_and_object_identity(self):
         c=self.c;t,tid=self.timeline();entry=c.append(tid,'Original','one');snapshot=c.snapshot()
         changed=copy.deepcopy(snapshot);changed['admissionRuntime']='wrong-runtime'
@@ -107,6 +169,53 @@ class ProviderTests(unittest.TestCase):
         changed=copy.deepcopy(snapshot);changed['objects'][c.e.identity(entry)]['timestamp']+=1
         with self.assertRaisesRegex(ValueError,'CORRUPT_STATE'):
             Catalogue(c.endpoint,'Test',self.seed,changed)
+    def test_cold_restore_bounds_context_work_for_accumulated_read_history(self):
+        from blue_language.api import Language
+        c=self.c;t,tid=self.timeline(True)
+        entry=c.append(tid,'Persisted','append')
+        request=c.p.request('Read Timeline Request',timeline=ref(tid),limit=1)
+        small=c.snapshot()
+        original=Language.processing_context
+        with patch.object(Language,'processing_context',autospec=True,side_effect=original) as baseline_contexts:
+            Catalogue(c.endpoint,'Ignored',self.seed,small).descriptor()
+        for _ in range(12):c.protocol('/timelines/read',wire(c.e,request))
+        snapshot=c.snapshot()
+        self.assertGreater(len(snapshot['objects']),50)
+        table,s3=MemoryTable(),MemoryS3()
+        packed=gzip.compress(json.dumps(snapshot).encode())
+        s3.objects['state']=packed
+        table.items['STATE']={'pk':'STATE','key':'state','revision':'state','sha256':hashlib.sha256(packed).hexdigest()}
+        cold=StateStore(table,s3,'data',c.endpoint,'Ignored',self.seed)
+        # Count expensive full resolver constructions, not wall-clock time.
+        # Read evidence must not require a new resolver for every saved object.
+        with patch.object(Language,'processing_context',autospec=True,side_effect=original) as contexts:
+            descriptor=cold.execute(lambda restored:restored.descriptor())
+        self.assertLessEqual(contexts.call_count,baseline_contexts.call_count+2)
+        self.assertEqual(cold.cached.p.state,snapshot['providerState'])
+        self.assertEqual(cold.cached.p.pid,c.p.pid)
+        self.assertEqual(cold.cached.p.verifier.attestation(descriptor),c.p.verifier.attestation(c.descriptor()))
+        self.assertEqual(cold.execute(lambda restored:restored.append(tid,'Persisted','append'),write=True),entry)
+        cold.cached.p.verifier.read_response(request,cold.execute(lambda restored:restored.protocol('/timelines/read',wire(c.e,request)),write=True))
+    def test_batched_restore_preserves_canonical_admission_for_inherited_fields(self):
+        from app.snapshot import restore_objects
+        from reference import Exact
+        from algorithms.blue import Failure
+        definition={'name':'Named','label':'Fixed','payload':{'type':'Text'}}
+        e=self.c.e;tid=e.define('Test/Named',definition)
+        value={'type':ref(tid),'label':'Fixed','payload':'Hello'}
+        bid=e.put(value)
+        self.assertNotEqual(e.language.raw_identify(json.dumps(value)),bid)
+        restored=Exact();restored.define('Test/Named',definition)
+        restore_objects(restored,{bid:value})
+        self.assertEqual(restored.language.load(bid).blue_id,bid)
+        self.assertEqual(restored.identity(value),bid)
+        self.assertEqual(restored.language.load(bid).exact_text,e.language.load(bid).exact_text)
+        # Even an unused object must be checked; admission cannot discard a
+        # changed/invalid inherited field and silently trust the claimed ID.
+        with self.assertRaisesRegex(ValueError,'CORRUPT_STATE'):
+            restore_objects(restored,{bid:dict(value,payload='Changed')})
+        with self.assertRaises(Failure):
+            restore_objects(restored,{bid:dict(value,payload={'items':['not text']})})
     def test_console_reads_committed_state_without_runtime_and_sees_other_writer(self):
         table,s3=MemoryTable(),MemoryS3()
         writer=StateStore(table,s3,'data','https://provider.example','Example',self.seed)

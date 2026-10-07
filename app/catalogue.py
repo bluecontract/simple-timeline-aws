@@ -6,10 +6,13 @@ VENDOR=ROOT/'vendor'
 os.environ['BLUE_PACKAGES_DIR']=str(VENDOR/'packages')
 sys.path.insert(0,str(VENDOR/'runtime'))
 sys.path.insert(0,str(VENDOR/'packages/blue-coordination/tools'))
-from reference import Exact,ModelProvider,Verifier,ref,check,hexbytes
+from reference import Exact,Verifier,ref,check,hexbytes
+from .provider_runtime import Provider as ModelProvider
 from .provider import initial_details,resolved_details
-from examples import import_inline,wire,inline_response,inline_entry
+from examples import import_inline,inline_response,inline_entry
+from .wire import wire
 from blue_language.physical import PhysicalCache
+from .snapshot import restore_objects
 
 MAX_PAGE=50
 MAX_CONTENT=32768
@@ -39,27 +42,12 @@ class Catalogue:
             # structure once, then reuse the original admission on later lookups.
             # Strictly re-admitting every nested object makes cold restoration
             # quadratic in accumulated read responses and access history.
-            pending=[]
-            for bid,obj in snapshot['objects'].items():
-                source=json.dumps(obj,sort_keys=True,separators=(',',':'))
-                raw_id=self.e.language.publish_raw(source,format='json')
-                if raw_id!=bid:pending.append((bid,obj,source))
-                else:
-                    self.e.objects[bid]=copy.deepcopy(obj)
-                    self.e._identified[source]=bid
-            # Source creation may have omitted exact inherited duplicates. Such
-            # objects need the canonical admission path to reproduce their ID.
-            for bid,obj,source in pending:
-                document=self.e.language.create(source,format='json')
-                check(document.blue_id==bid,'CORRUPT_STATE')
-                self.e.language.publish_document(document)
-                self.e.objects[bid]=copy.deepcopy(obj)
-                self.e._identified[source]=bid
-        model_endpoint=snapshot['objects'][snapshot['provider']].get('endpoint') if snapshot else endpoint
+            restore_objects(self.e,snapshot['objects'])
+        model_endpoint=self.e.text_field(ref(snapshot['provider']),'endpoint') if snapshot else endpoint
         self.p=ModelProvider(self.e,seed=seed,endpoint=model_endpoint,provider_type='Standalone/Timeline Provider',
                              snapshot=snapshot['providerState'] if snapshot else None)
         provider=self.e.get(ref(snapshot['provider'])) if snapshot else dict(self.p.provider,**details,endpoint=endpoint)
-        check(provider['publicKey']==self.p.key,'PROVIDER_IDENTITY_CHANGED')
+        check(self.e.text_field(provider,'publicKey')==self.p.key,'PROVIDER_IDENTITY_CHANGED')
         self.p.provider=provider
         self.p.pid=self.e.identity(provider)
         self.p.verifier=Verifier(self.e,provider)
@@ -206,7 +194,7 @@ class Catalogue:
     def read(self,request,key=None,owner=False):
         check(type(request.get('limit')) is int and 0<=request['limit']<=MAX_PAGE,'LIMIT_EXCEEDED')
         response=self.p.read(request,now(),key=key,owner='owner' if owner else None)
-        return inline_response(self.e,response)
+        return self.export(inline_response(self.e,response))
 
     def _reachable(self,bid):
         """Only follow content edges of accepted entries on the authorized timeline."""
@@ -271,7 +259,7 @@ class Catalogue:
             response=self.p.get_access(request,now());return self.export(dict(response,object=self.e.get(response['object'])))
         timeline=self.e.require_kind(request['timeline'],'Signed Timeline');bid=self.e.identity(timeline)
         self.p.verifier.timeline(timeline);self.timeline(bid)
-        if not timeline['publicRead'] and key is None and not owner:raise ValueError('UNAUTHENTICATED')
+        if not self.p.is_public(timeline) and key is None and not owner:raise ValueError('UNAUTHENTICATED')
         check(self.p.can_read(timeline,key,owner='owner' if owner else None),'ACCESS_DENIED')
         if path=='/timelines/read':return self.read(request,key,owner)
         if path=='/timelines/entry':

@@ -5,6 +5,7 @@ StateStore checks the S3 snapshot hash and the current DynamoDB pointer first.
 """
 import copy,re
 from .provider import resolved_details,inline_provider
+from .wire import with_aliases
 
 FORMAT='simple-timeline-console/1'
 
@@ -13,15 +14,12 @@ class ConsoleView:
         self.snapshot=snapshot
         self.view=snapshot['console']
         if self.view['format']!=FORMAT:raise ValueError('INCOMPATIBLE_CONSOLE_VIEW')
-        self.workspace=copy.deepcopy(self.view['workspace'])
+        self.workspace=self.wire(self.view['workspace'])
+        self.workspace['overview'].pop('ownerActor',None)
         provider=snapshot['objects'][snapshot['provider']]
         self.workspace['overview']['providerDetails']=resolved_details(snapshot['definition'],provider)
 
-    def wire(self,value):
-        if isinstance(value,list):return [self.wire(x) for x in value]
-        if isinstance(value,dict):
-            return {k:{'blueId':self.view['aliases'][v]} if k in ('type','itemType','keyType','valueType') and isinstance(v,str) and v in self.view['aliases'] else self.wire(v) for k,v in value.items()}
-        return value
+    def wire(self,value):return with_aliases(value,self.view['aliases'])
 
     def get(self,value):
         if isinstance(value,dict) and set(value)=={'blueId'}:
