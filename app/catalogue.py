@@ -6,7 +6,8 @@ VENDOR=ROOT/'vendor'
 os.environ['BLUE_PACKAGES_DIR']=str(VENDOR/'packages')
 sys.path.insert(0,str(VENDOR/'runtime'))
 sys.path.insert(0,str(VENDOR/'packages/blue-coordination/tools'))
-from reference import Exact,ModelProvider,Verifier,ref,check,hexbytes
+from reference import Exact,Verifier,ref,check,hexbytes
+from .provider_runtime import Provider as ModelProvider
 from .provider import initial_details,resolved_details
 from examples import import_inline,inline_response,inline_entry
 from .wire import wire
@@ -56,11 +57,11 @@ class Catalogue:
                 self.e.language.publish_document(document)
                 self.e.objects[bid]=copy.deepcopy(obj)
                 self.e._identified[source]=bid
-        model_endpoint=snapshot['objects'][snapshot['provider']].get('endpoint') if snapshot else endpoint
+        model_endpoint=self.e.text_field(ref(snapshot['provider']),'endpoint') if snapshot else endpoint
         self.p=ModelProvider(self.e,seed=seed,endpoint=model_endpoint,provider_type='Standalone/Timeline Provider',
                              snapshot=snapshot['providerState'] if snapshot else None)
         provider=self.e.get(ref(snapshot['provider'])) if snapshot else dict(self.p.provider,**details,endpoint=endpoint)
-        check(provider['publicKey']==self.p.key,'PROVIDER_IDENTITY_CHANGED')
+        check(self.e.text_field(provider,'publicKey')==self.p.key,'PROVIDER_IDENTITY_CHANGED')
         self.p.provider=provider
         self.p.pid=self.e.identity(provider)
         self.p.verifier=Verifier(self.e,provider)
@@ -277,7 +278,7 @@ class Catalogue:
             response=self.p.get_access(request,now());return self.export(dict(response,object=self.e.get(response['object'])))
         timeline=self.e.require_kind(request['timeline'],'Signed Timeline');bid=self.e.identity(timeline)
         self.p.verifier.timeline(timeline);self.timeline(bid)
-        if not timeline['publicRead'] and key is None and not owner:raise ValueError('UNAUTHENTICATED')
+        if not self.p.is_public(timeline) and key is None and not owner:raise ValueError('UNAUTHENTICATED')
         check(self.p.can_read(timeline,key,owner='owner' if owner else None),'ACCESS_DENIED')
         if path=='/timelines/read':return self.read(request,key,owner)
         if path=='/timelines/entry':

@@ -99,6 +99,68 @@ class ProviderTests(unittest.TestCase):
         cold=StateStore(table,s3,'data','https://provider.example','Example',self.seed)
         retry=cold.execute(lambda c:c.append(tid,'Once','lost-response'),write=True)
         self.assertEqual(first,retry);self.assertEqual(cold.execute(lambda c:c.entries(tid))['total'],1)
+    def test_exact_private_timeline_remains_private_across_append_and_restore(self):
+        from blue_language import CORE
+        c=self.c;t,tid=self.timeline()
+        typed=c.export(t)
+        typed['publicRead']={'type':ref(CORE['Boolean']),'value':False}
+        typed['url']={'type':ref(CORE['Text']),'value':typed['url']}
+        first=c.append(tid,'Private content','first')
+        read=c.p.request('Read Timeline Request',timeline=ref(tid),limit=50)
+        signed=self.signed(read)
+        c.create_access('Readers',[tid],[signed['publicKey']],'grant')
+        requests=[('/timelines/read',read),
+                  ('/timelines/entry',c.p.request('Fetch Timeline Entry Request',timeline=ref(tid),entry=ref(c.e.identity(first)))),
+                  ('/timelines/content',c.p.request('Resolve Timeline Content Request',timeline=ref(tid),content=first['message']))]
+        def denied(provider):
+            for path,request in requests:
+                with self.subTest(path=path):
+                    with self.assertRaises(ProtocolError) as error:
+                        provider.protocol(path,provider.export(request))
+                    self.assertEqual(error.exception.status,401)
+        denied(c)
+        # Same native Boolean value and timeline identity, explicit exact form.
+        appended=c.append(tid,{'timeline':typed},'typed-timeline')
+        self.assertEqual(c.e.identity(typed),tid)
+        denied(c)
+        c.protocol('/timelines/read',signed)
+        unauthorized=self.signed(read,seed=b'\x33'*32)
+        with self.assertRaises(ProtocolError) as error:c.protocol('/timelines/read',unauthorized)
+        self.assertEqual(error.exception.status,403)
+        from algorithms.blue import Failure
+        with self.assertRaises(Failure):
+            c.e.identity(dict(typed,publicRead={'type':ref(CORE['Text']),'value':'false'}))
+        snapshot=c.snapshot()
+        restored=Catalogue(c.endpoint,'Ignored',self.seed,snapshot)
+        denied(restored)
+        response=restored.protocol('/timelines/read',signed)
+        restored.p.verifier.read_response(read,response)
+        self.assertEqual(len(response['object']['page']['entries']),2)
+        self.assertEqual(restored.append(tid,{'timeline':typed},'typed-timeline'),appended)
+        self.assertEqual(restored.p.pid,c.p.pid)
+        self.assertEqual(restored.e.identity(restored.timeline(tid)),tid)
+
+    def test_restore_after_append_of_exact_provider_scalars(self):
+        from blue_language import CORE
+        c=self.c;t,tid=self.timeline()
+        before=c.p.pid
+        # Core exact exports use explicit Text values, with the same BlueId as
+        # this provider's source shorthand. Inline admission stores that form.
+        provider=c.export(c.p.provider)
+        for field in ('displayName','endpoint','publicKey'):
+            provider[field]={'type':ref(CORE['Text']),'value':provider[field]}
+        message={'provider':provider}
+        first=c.append(tid,message,'exact-provider')
+        snapshot=c.snapshot()
+        self.assertEqual(c.e.identity(provider),before)
+        self.assertIsInstance(snapshot['objects'][before]['endpoint'],dict)
+        restored=Catalogue(c.endpoint,'Ignored',self.seed,snapshot)
+        self.assertEqual(restored.p.pid,before)
+        self.assertEqual(restored.append(tid,message,'exact-provider'),first)
+        self.assertEqual(restored.entries(tid)['total'],1)
+        restored.p.verifier.attestation(restored.descriptor())
+        self.assertEqual(restored.endpoint,c.endpoint)
+
     def test_restoration_rejects_changed_runtime_and_object_identity(self):
         c=self.c;t,tid=self.timeline();entry=c.append(tid,'Original','one');snapshot=c.snapshot()
         changed=copy.deepcopy(snapshot);changed['admissionRuntime']='wrong-runtime'
