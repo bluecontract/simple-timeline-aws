@@ -32,6 +32,20 @@ requires an explicit state migration. Noncanonical source
 forms are admitted again to reproduce their canonical identities. Access updates use the actual pinned
 Contracts processor, not a separately invented permission-document format.
 
+Cold restoration reuses one Blue resolver while rehashing snapshot objects and
+publishes each resolved dependency body once. Rebuilding the resolver for every
+saved read response repeatedly copied the growing store and could exhaust the
+29-second Lambda request budget. Per-object processing limits and the canonical
+admission fallback remain in force. This changes no provider, timeline, access,
+checkpoint or idempotency identity and requires no snapshot migration. It does
+not remove the overall history-dependent cost of this single-snapshot design.
+
+Source changes are not automatically deployed. After merging a restoration fix,
+build and deploy the merged revision to the existing stack, retaining its
+identity, signing seed, password and state resources. Check a cold `/provider`
+request and a normal owner operation against the retained state; local timings
+are not evidence that the deployed Lambda stays within its request budget.
+
 ## Console reads
 
 Each committed snapshot includes the owner workspace view, produced from that

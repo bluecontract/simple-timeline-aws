@@ -12,6 +12,7 @@ from .provider import initial_details,resolved_details
 from examples import import_inline,inline_response,inline_entry
 from .wire import wire
 from blue_language.physical import PhysicalCache
+from .snapshot import restore_objects
 
 MAX_PAGE=50
 MAX_CONTENT=32768
@@ -41,22 +42,7 @@ class Catalogue:
             # structure once, then reuse the original admission on later lookups.
             # Strictly re-admitting every nested object makes cold restoration
             # quadratic in accumulated read responses and access history.
-            pending=[]
-            for bid,obj in snapshot['objects'].items():
-                source=json.dumps(obj,sort_keys=True,separators=(',',':'))
-                raw_id=self.e.language.publish_raw(source,format='json')
-                if raw_id!=bid:pending.append((bid,obj,source))
-                else:
-                    self.e.objects[bid]=copy.deepcopy(obj)
-                    self.e._identified[source]=bid
-            # Source creation may have omitted exact inherited duplicates. Such
-            # objects need the canonical admission path to reproduce their ID.
-            for bid,obj,source in pending:
-                document=self.e.language.create(source,format='json')
-                check(document.blue_id==bid,'CORRUPT_STATE')
-                self.e.language.publish_document(document)
-                self.e.objects[bid]=copy.deepcopy(obj)
-                self.e._identified[source]=bid
+            restore_objects(self.e,snapshot['objects'])
         model_endpoint=self.e.text_field(ref(snapshot['provider']),'endpoint') if snapshot else endpoint
         self.p=ModelProvider(self.e,seed=seed,endpoint=model_endpoint,provider_type='Standalone/Timeline Provider',
                              snapshot=snapshot['providerState'] if snapshot else None)
