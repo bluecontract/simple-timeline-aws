@@ -10,6 +10,7 @@ from reference import Exact,Verifier,ref,check,hexbytes
 from .provider_runtime import Provider as ModelProvider
 from .provider import initial_details,resolved_details
 from examples import import_inline,inline_response,inline_entry
+from access_runtime import control_timeline
 from .wire import wire
 from blue_language.physical import PhysicalCache
 from .snapshot import restore_objects
@@ -75,8 +76,12 @@ class Catalogue:
                 'control':self.e.identity(self.control),'objects':self.e.objects,
                 'providerState':self.p.snapshot(),'ui':self.ui,'console':console}
 
-    def descriptor(self):
-        att=self.p.discovery(self.control,self.endpoint)
+    def descriptor(self,access=None):
+        control=self.control
+        if access is not None:
+            check(isinstance(access,str) and access in self.p.state['access'],'NOT_FOUND')
+            control=control_timeline(self.e,ref(access))
+        att=self.p.discovery(control,self.endpoint)
         obj=self.e.get(att['object']);obj['maxPageSize']=MAX_PAGE
         return wire(self.e,dict(self.p.attest(obj),provider=self.p.provider,object=obj))
 
@@ -158,11 +163,20 @@ class Catalogue:
     def create_access(self,name,timelines,keys,key):
         check(isinstance(name,str) and 0<len(name.strip())<=120,'INVALID_REQUEST')
         values=self._access_targets(timelines,keys);self._mutation_key(key)
-        replay='owner/access-create/'+key in self.p.state['requests']
-        access,entry=self.p.create_access('owner',values,keys,key,self.control,now())
-        aid=self.e.identity(access);saved=self.p.state['access'][aid]
-        if not replay and (saved['timelines']!=timelines or saved['keys']!=keys):
-            entry=self.p.update_access('owner',access,values,keys,hashlib.sha256(('create/'+key).encode()).hexdigest(),now())
+        previous=self.p.state['requests'].get('owner/access-create/'+key)
+        replay=previous is not None
+        # Reuse the original channel on retries, including pre-upgrade documents.
+        # A fresh request gets its own URL even when the initial grants match.
+        control=control_timeline(self.e,ref(previous['document'])) if replay else self.p.create('__provider__','access/'+uuid.uuid4().hex,True)
+        control_id=self.e.identity(control)
+        try:
+            access,entry=self.p.create_access('owner',values,keys,key,control,now())
+        except Exception:
+            if not replay:self.p.state['timelines'].pop(control_id,None)
+            raise
+        aid=self.e.identity(access)
+        if not replay:
+            self.ui['timelines'][control_id]={'name':name.strip()+' — access history','archived':False,'system':True}
         archived=self.ui['access'].get(aid,{}).get('archived',False) if replay else False
         aid=self._remember_access(access,name.strip(),archived=archived)
         return {'blueId':aid,'access':self.export(access),'publication':self.export(inline_entry(self.e,entry))}
@@ -179,6 +193,7 @@ class Catalogue:
     def list_access(self):
         return [{'blueId':aid,**meta,'allowedTimelines':self.p.state['access'][aid]['timelines'],
                  'allowedKeys':self.p.state['access'][aid]['keys'],'access':self.object(aid),
+                 'controlTimeline':self.e.identity(control_timeline(self.e,ref(aid))),
                  'currentDocument':self.object(meta['current'])} for aid,meta in self.ui['access'].items()]
 
     def archive_timeline(self,bid,key):

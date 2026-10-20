@@ -5,7 +5,7 @@ signed, timestamped entries and executable Timeline Access documents, using the
 selected `blue-coordination` package.
 
 <!-- DEPLOY_BUTTON -->
-[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2F3e0eaf4e163ab27d9cfc708e66bc165b8b0bc13ead0e8e4badedcc43fd56e45b%2Ftemplate.json)
+[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2Fd46790172738e13c79c42d7c190d5b338da1966841f4516806c3b7981241f433%2Ftemplate.json)
 <!-- /DEPLOY_BUTTON -->
 
 Enter the **provider name**, **company name**, **website URL**, and a
@@ -39,6 +39,7 @@ for older providers without rewriting their signed objects.
 - Append text or Blue JSON. The provider assigns the timestamp, actor and predecessor.
 - Browse entries and inspect/copy the exact Blue objects.
 - Create Timeline Access documents selecting timelines and Ed25519 public keys.
+  Each new document gets its own provider-owned public timeline.
 - Edit both access lists together. The provider publishes a Contracts `update`
   operation on its public access timeline and executes the resulting document.
 - Revoke an access document: publish an update clearing both lists and remove it
@@ -46,10 +47,16 @@ for older providers without rewriting their signed objects.
 - Archive a timeline: remove its grants and stop owner appends. Existing entries
   remain immutable. Public timelines remain public; archive is not erasure.
 
-The public access timeline is created automatically and cannot be archived or
-written to directly through the owner console. Its entries are published by the
-provider when access changes. Timeline and access-document names are console metadata; they are not
-extra protocol identifiers.
+Each access document's public timeline is created automatically when the document
+is created. It contains that document's initial publication, updates and revocation.
+Use **History** on an access document to browse it. These timelines cannot be
+archived or written to directly through the owner console.
+
+Retrying the same creation request reuses its document and timeline. A new request
+creates a separate document and history, even with identical grants. Existing
+documents retain their original channels and signed history, including the shared
+control timeline used by older releases. Timeline and access-document names are
+console metadata; they are not extra protocol identifiers.
 
 ## Protocol
 
@@ -58,7 +65,8 @@ timelines. For example, `https://abc.execute-api.us-east-1.amazonaws.com` expose
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| GET | `/provider` | Signed provider descriptor, including the public access timeline |
+| GET | `/provider` | Signed provider descriptor, including the default/legacy control timeline |
+| GET | `/provider?access=<initial-document-BlueId>` | Signed descriptor for an access document's own public timeline |
 | GET | `/types` | Public provider subtype definition and exact type identifiers |
 | GET | `/packages/coordination.bluepkg` | The selected Coordination package and dependency closure |
 | POST | `/timelines/read` | Entries and completeness, with fixed-checkpoint pagination |

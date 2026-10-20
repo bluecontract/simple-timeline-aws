@@ -108,7 +108,8 @@ def handler(event,context):
                     pass
             return response(200,store.execute(lambda c:owner_route(c,method,path,body,query),write=method!='GET'))
         if method=='GET' and path in ('/provider','/types'):
-            return response(200,store.execute(lambda c:c.descriptor() if path=='/provider' else c.types()),public=True)
+            query=event.get('queryStringParameters') or {}
+            return response(200,store.execute(lambda c:c.descriptor(query.get('access')) if path=='/provider' else c.types()),public=True)
         if method=='POST' and path in PROTOCOL_PATHS:
             if path not in PUBLIC_PATHS:
                 check(owner,'UNAUTHENTICATED');check(auth.origin(headers,store.endpoint),'INVALID_ORIGIN')

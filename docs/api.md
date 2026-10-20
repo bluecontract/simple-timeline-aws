@@ -1,7 +1,9 @@
 # Reading and verifying timelines
 
-The full contract is the vendored [Coordination specification](../vendor/packages/blue-coordination/spec/coordination.md).
-The deployed provider uses the same exact type identities. JSON below uses readable
+The core contract is the vendored [Coordination specification](../vendor/packages/blue-coordination/spec/coordination.md).
+This hosted implementation extends its single-control-timeline discovery with
+per-document histories and `GET /provider?access=<initial-document-BlueId>`,
+described below. The deployed provider uses the same exact type identities. JSON below uses readable
 aliases for explanation; actual wire requests use `type: {"blueId":"…"}`. Obtain
 those identifiers from `GET /types` or the package archive.
 
@@ -88,32 +90,56 @@ contracts:
     provider:
       type: <the provider subtype, obtainable from /types>
       publicKey: <provider verification key>
-    url: https://example.execute-api.us-east-1.amazonaws.com/timelines/access
+      endpoint: https://example.execute-api.us-east-1.amazonaws.com
+    url: https://example.execute-api.us-east-1.amazonaws.com/timelines/access/<unique-history-id>
   update:
     type: Coordination/Update Timeline Access
 ```
 
-The provider subtype supplies `endpoint`. This is an actual executable Blue
+The provider supplies its immutable `endpoint`. This is an actual executable Blue
 Contracts document. An edit publishes `Contracts/Operation Request` targeting its
 initial BlueId, channel `provider`, operation `update`, with a
 `Coordination/Timeline Access Update` containing both new lists. The provider
 executes this public history before adopting the resulting permissions.
 
-To fetch the public access history, obtain the signed descriptor from `GET /provider`,
-then send a bare `Read Timeline Request` for its `controlTimeline` to
+Every new Timeline Access document gets a unique provider-owned public timeline,
+even when another document has identical initial grants. Its initial publication
+and all updates and revocations appear only on that timeline. A retry with the
+same idempotency key returns the original document and timeline; changing its
+initial grants with the same key is rejected. Creating an ordinary data timeline
+does not itself create an access document.
+
+To fetch a document's public access history, obtain its signed descriptor from
+`GET /provider?access=<initial-document-BlueId>`. Verify the signature against the
+adopted provider and check that `controlTimeline` matches the document's
+`contracts.provider` channel (same provider and URL, `publicRead: true`).
+Then send a bare `Read Timeline Request` for that timeline to
 `POST /timelines/read`. No key, login or signature is required. Continue using
 `nextCursor` until `hasMore` is false and verify the checkpoint and chain. Public
 access history remains fetchable after the grant is revoked.
+
+This query is a hosted discovery extension: the pinned Coordination reference
+example uses a single reserved control timeline. Plain `GET /provider` preserves
+that default/legacy descriptor; it is not an aggregate of the new histories.
+Older access documents keep their original channel, identity and history, and
+the access-specific query works for them too. Only published access-document IDs
+are accepted; a customer-created public timeline cannot become a grant authority.
 
 ## Runnable verified reader
 
 Copy the provider BlueId from the console. The reader checks that adopted identity;
 an untrusted discovery response alone must not select a replacement provider.
 
+Copy the access document's **Initial** JSON from the console to `access.json`.
+Its channel selects the history to verify:
+
 ```sh
 .venv/bin/python scripts/read_timeline.py https://YOUR-ENDPOINT \
-  --provider EXPECTED_PROVIDER_BLUE_ID --public-access --show-exchanges
+  --provider EXPECTED_PROVIDER_BLUE_ID --access-file access.json --show-exchanges
 ```
+
+`--public-access` without an access file still reads the default/legacy control
+timeline. It does not enumerate the histories belonging to newer access documents.
 
 For a private timeline, copy its exact JSON from **Timeline object** into a file:
 

@@ -1,10 +1,11 @@
 """Fetch and verify a public or Ed25519-authorized private timeline, following pages."""
-import argparse,json,sys,urllib.request
+import argparse,json,sys,urllib.parse,urllib.request
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from app.catalogue import PhysicalCache,ref,wire,import_inline
 from app.reader import ReaderExact as Exact
 from reference import Verifier,check
+from access_runtime import control_timeline
 from algorithms.blue import Failure
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -14,16 +15,26 @@ def call(base,path,body=None):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('endpoint');p.add_argument('--provider',required=True,help='Expected provider BlueId from a trusted source')
-    target=p.add_mutually_exclusive_group(required=True);target.add_argument('--timeline-file',type=Path,help='Exact timeline JSON copied from the console');target.add_argument('--public-access',action='store_true')
+    target=p.add_mutually_exclusive_group(required=True);target.add_argument('--timeline-file',type=Path,help='Exact timeline JSON copied from the console');target.add_argument('--public-access',action='store_true',help='Read the legacy provider control timeline');target.add_argument('--access-file',type=Path,help='Initial Timeline Access JSON whose public history should be verified')
     p.add_argument('--key-file',type=Path,help='32-byte Ed25519 seed in lowercase hex');p.add_argument('--after-timestamp',type=int);p.add_argument('--after-entry-file',type=Path)
     p.add_argument('--limit',type=int,default=50);p.add_argument('--show-exchanges',action='store_true');a=p.parse_args()
     check(a.endpoint.startswith('https://'),'HTTPS_REQUIRED')
     with PhysicalCache(65536).scope():
         e=Exact();types=call(a.endpoint,'/types');definition=types['providerType']
         check(e.define('Remote/Provider',definition['definition'])==definition['blueId'],'PROVIDER_TYPE_MISMATCH')
-        discovery=call(a.endpoint,'/provider');import_inline(e,discovery);provider=discovery['provider'];check(e.identity(provider)==a.provider,'WRONG_PROVIDER')
+        access=json.loads(a.access_file.read_text()) if a.access_file else None
+        path='/provider'
+        if access is not None:
+            import_inline(e,access);e.require_kind(access,'Timeline Access')
+            path+='?'+urllib.parse.urlencode({'access':e.identity(access)})
+        discovery=call(a.endpoint,path);import_inline(e,discovery);provider=discovery['provider'];check(e.identity(provider)==a.provider,'WRONG_PROVIDER')
         verify=Verifier(e,provider);descriptor=verify.attestation(discovery)
-        timeline=descriptor['controlTimeline'] if a.public_access else json.loads(a.timeline_file.read_text());import_inline(e,timeline)
+        if access is not None:
+            timeline=control_timeline(e,access)
+            check(e.identity(descriptor['controlTimeline'])==e.identity(timeline),'INVALID_CONTROL_TIMELINE')
+            verify.timeline(timeline)
+        else:timeline=descriptor['controlTimeline'] if a.public_access else json.loads(a.timeline_file.read_text())
+        import_inline(e,timeline)
         fields={'timeline':ref(e.identity(timeline)),'limit':a.limit}
         if a.after_timestamp is not None:fields['afterTimestamp']=a.after_timestamp
         if a.after_entry_file:

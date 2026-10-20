@@ -63,7 +63,7 @@ class ProviderTests(unittest.TestCase):
         c.update_access(aid,[],[],'revoke')
         with self.assertRaises(ProtocolError) as denied:c.protocol('/timelines/read',s)
         self.assertEqual(denied.exception.status,403);self.assertEqual(c.p.verifier.attestation(denied.exception.payload)['code'],'ACCESS_DENIED')
-        pub=c.p.request('Read Timeline Request',timeline=ref(c.e.identity(c.control)),limit=50)
+        pub=c.p.request('Read Timeline Request',timeline=ref(c.list_access()[0]['controlTimeline']),limit=50)
         history=c.protocol('/timelines/read',wire(c.e,pub));entries=history['object']['page']['entries']
         self.assertEqual(len(entries),2);self.assertEqual(entries[1]['message']['operation'],'update')
         restored=Catalogue(c.endpoint,'Test',self.seed,c.snapshot())
@@ -329,10 +329,12 @@ class ProviderTests(unittest.TestCase):
         c.update_access(aid,[],[],'delete',archived=True)
         c.create_access('Reader',[tid],['22'*32],'first')
         self.assertTrue(c.ui['access'][aid]['archived']);self.assertEqual(c.list_access()[0]['allowedKeys'],[])
-        c.create_access('Reader',[tid],['22'*32],'second')
-        self.assertFalse(c.ui['access'][aid]['archived']);self.assertEqual(c.list_access()[0]['allowedKeys'],['22'*32])
+        second=c.create_access('Reader',[tid],['22'*32],'second');second_id=second['blueId']
+        self.assertNotEqual(second_id,aid)
+        self.assertTrue(c.ui['access'][aid]['archived']);self.assertEqual(c.p.state['access'][aid]['keys'],[])
+        self.assertFalse(c.ui['access'][second_id]['archived']);self.assertEqual(c.p.state['access'][second_id]['keys'],['22'*32])
         c.update_access(aid,[],[],'delete',archived=True)
-        self.assertEqual(c.list_access()[0]['allowedKeys'],['22'*32])
+        self.assertEqual(c.p.state['access'][second_id]['keys'],['22'*32])
     def test_http_owner_boundary_and_public_read(self):
         import app.handler as http
         table,s3=MemoryTable(),MemoryS3();store=StateStore(table,s3,'data','https://provider.example','Example',self.seed)

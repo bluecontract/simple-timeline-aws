@@ -109,6 +109,17 @@ retroactively. Unreachable snapshots left by failed commits may be cleaned up on
 with a process that proves they are not referenced by a retained state pointer or
 backup.
 
+New Timeline Access documents each allocate a dedicated provider-owned public
+timeline in the same atomic state commit as their initial publication. Retrying
+creation reuses the recorded document and channel, including after a restart or
+lost response. New requests with identical grants create independent documents.
+Updates and revocations continue on the channel recorded in each document.
+Upgrades preserve older documents on their original shared timeline; no signed
+document or historical entry is rewritten. The default provider descriptor remains
+available for those histories. Clients reading a newer document use
+`GET /provider?access=<initial-document-BlueId>` and verify its channel before
+reading or executing its history.
+
 AWS charges apply for API calls, Lambda, Secrets Manager, storage and logs. There
 is no always-on server. The template uses a modest API throttle; adjust it with
 observed latency and load. Monitor Lambda errors/duration and DynamoDB conditional
