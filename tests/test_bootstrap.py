@@ -66,16 +66,20 @@ class BootstrapTests(unittest.TestCase):
         aws.client.return_value.update_stack.return_value={'StackId':'stack'}
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);(root/'build').mkdir()
-            release={'sha256':'abc','artifactUrl':'https://artifacts.s3.eu-west-1.amazonaws.com/releases/abc/provider.zip','templateUrl':'https://artifacts/template.json'}
+            digest=hashlib.sha256(b'fixture').hexdigest()
+            base=f'https://artifacts.s3.eu-west-1.amazonaws.com/releases/{digest}'
+            release={'sha256':digest,'artifactUrl':base+'/provider.zip','templateUrl':base+'/template.json'}
             (root/'build/release.json').write_text(json.dumps(release))
-            for name in ('provider.zip','template.json'):(root/'build'/name).write_bytes(b'fixture')
-            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts']),patch('builtins.print'):
+            (root/'build/provider.zip').write_bytes(b'fixture')
+            (root/'build/template.json').write_text(json.dumps({'Resources':{'InstallProvider':{'Properties':{
+                'ArtifactUrl':release['artifactUrl'],'ArtifactSha256':digest}}}}))
+            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch.object(deploy,'verify_public_release'),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts']),patch('builtins.print'):
                 deploy.main()
             parameters=aws.client.return_value.update_stack.call_args.kwargs['Parameters']
             self.assertEqual(next(p for p in parameters if p['ParameterKey']=='AdminPassword'),{'ParameterKey':'AdminPassword','UsePreviousValue':True})
             passwordfile=root/'.local/console-password.txt'
             self.assertFalse(passwordfile.exists())
-            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts','--rotate-password']),patch('builtins.print'):
+            with patch.object(deploy,'ROOT',root),patch.object(deploy,'session',return_value=aws),patch.object(deploy,'verify_public_release'),patch('sys.argv',['deploy','--account','123','--region','eu-west-1','--release-bucket','artifacts','--rotate-password']),patch('builtins.print'):
                 deploy.main()
             parameters=aws.client.return_value.update_stack.call_args.kwargs['Parameters']
             rotated=next(p for p in parameters if p['ParameterKey']=='AdminPassword')

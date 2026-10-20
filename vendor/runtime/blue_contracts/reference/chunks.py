@@ -93,7 +93,7 @@ class Attempt:
         wire=committed('chunk-result',dict(token=token.identity,
             outcome=outcome.observations() if outcome is not None else None,
             snapshot=run.state.wire(),events=run.events,work=run.work,changes=run.changes,
-            checkpoints=run.writes,gas=run.meter.used,gasTrace=run.meter.trace,rejected=run.meter.rejected,
+            checkpoints=run.writes,gas=run.meter.used,rejected=run.meter.rejected,
             turns=run.turns,rounds=run.rounds,units=run.units,logicalPrefix=run.logical_commitment()))
         result=ChunkResult(wire)
         # Store a separate immutable wire copy. Mutating a returned object cannot
@@ -106,7 +106,7 @@ class Attempt:
         descriptor=token.descriptor if isinstance(token,ChunkToken) else closed(token,{'format','token','input','history'})['token']
         require(self._token is not None and descriptor==self._token._descriptor, 'STALE_CHUNK_TOKEN')
         wire=completion.to_data() if isinstance(completion,ChunkResult) else deepcopy(completion)
-        closed(wire,{'identity','token','outcome','snapshot','events','work','changes','checkpoints','gas','gasTrace','rejected','turns','rounds','units','logicalPrefix'})
+        closed(wire,{'identity','token','outcome','snapshot','events','work','changes','checkpoints','gas','rejected','turns','rounds','units','logicalPrefix'})
         require(wire['token']==self._token.identity, 'CHUNK_INPUT_MISMATCH')
         require(committed('chunk-result',{k:v for k,v in wire.items() if k!='identity'})==wire,'INVALID_CHUNK_COMMITMENT')
         candidate=self._candidates.get(wire['identity'])

@@ -4,7 +4,7 @@ from reference import Exact, ModelProvider, ref, api_urls
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from blue_language.physical import PhysicalCache
-import package as publisher
+from app import protocol_packages as publisher
 
 READER_SEED = b'\x22' * 32  # PUBLIC fixture, never a deployment credential.
 

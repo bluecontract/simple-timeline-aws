@@ -1,0 +1,24 @@
+{
+  "sourceRepository": "bluecontract/blue-packages",
+  "sourceRevision": "85a071bb51390f542db669001dfa5a8eddde363d",
+  "packages": {
+    "Language": {
+      "path": "packages/blue-language/dist/package.bluepkg",
+      "blueId": "8XGYNufx24r7Dc5bGoeobcGNCn9roLzSfZCQyHBTaTx4",
+      "version": "1.0.0",
+      "sha256": "a030dd4c88e41a414918ef4895017862e154b438848bd5c0e4f5bc880e7b8a90"
+    },
+    "Contracts": {
+      "path": "packages/blue-contracts/dist/package.bluepkg",
+      "blueId": "AibxCqz62K19mhRWXuWhnZJx6a3o5UXU7sRnAhoUNnFD",
+      "version": "1.0.0-final-gas.1",
+      "sha256": "61c6dd2b0a442e3ffdf564b24ef6db6ff7a2c6aa115c18d00ecc3952af6cdcb1"
+    },
+    "Coordination": {
+      "path": "packages/blue-coordination/dist/package.bluepkg",
+      "blueId": "4gmSjwn3DCYBVeDieXxuXgsPvvz2dU6ovFXnnuyv2RjA",
+      "version": "0.2.0-access-events.1",
+      "sha256": "9bcaff8df7fe0a695c7b31461f335a198813e06737c324971594980d8cfdebfb"
+    }
+  }
+}

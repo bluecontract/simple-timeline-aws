@@ -56,11 +56,7 @@ def main():
     digest=hashlib.sha256(target.read_bytes()).hexdigest();url=a.release_base.rstrip('/')+'/'+digest+'/provider.zip'
     template=make_template(url,digest);(BUILD/'template.json').write_text(json.dumps(template,indent=2)+'\n')
     (BUILD/'release.json').write_text(json.dumps({'sha256':digest,'artifactUrl':url,'templateUrl':a.release_base.rstrip('/')+'/'+digest+'/template.json','files':len(files),'bytes':target.stat().st_size},indent=2)+'\n')
-    readme=ROOT/'README.md'
-    if readme.exists():
-        text=readme.read_text();start=text.index('<!-- DEPLOY_BUTTON -->');end=text.index('<!-- /DEPLOY_BUTTON -->',start)
-        template_url=a.release_base.rstrip('/')+'/'+digest+'/template.json'
-        button='[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL='+urllib.parse.quote(template_url,safe='')+')'
-        readme.write_text(text[:start]+'<!-- DEPLOY_BUTTON -->\n'+button+'\n'+text[end:])
+    # A build is not a publication. Advertise the new template only after the
+    # publish command has verified both public downloads and CloudFormation.
     print(json.dumps({'sha256':digest,'files':len(files),'bytes':target.stat().st_size}))
 if __name__=='__main__':main()

@@ -87,7 +87,8 @@ class Catalogue:
 
     def types(self):
         return {'types':self.e.aliases,'providerType':{'blueId':self.provider_type,'definition':wire(self.e,self.definition)},
-                'package':'/packages/coordination.bluepkg'}
+                'package':'/packages/coordination.bluepkg',
+                'protocol':json.loads((VENDOR/'selection.json').read_text())['packages']['Coordination']}
 
     def export(self,value):return wire(self.e,value)
 
@@ -167,14 +168,24 @@ class Catalogue:
         replay=previous is not None
         # Reuse the original channel on retries, including pre-upgrade documents.
         # A fresh request gets its own URL even when the initial grants match.
+        before=self.p.snapshot() if not replay else None
         control=control_timeline(self.e,ref(previous['document'])) if replay else self.p.create('__provider__','access/'+uuid.uuid4().hex,True)
         control_id=self.e.identity(control)
+        aid=None
         try:
             access,entry=self.p.create_access('owner',values,keys,key,control,now())
+            aid=self.e.identity(access)
+            if not replay:
+                # Activation requires a genuinely processed provider-channel
+                # checkpoint. Publication alone only initializes the document.
+                # Execute the packaged operation, including its update event,
+                # in the same durable transaction as the new public history.
+                self.p.update_access('owner',access,values,keys,'access-initialize/'+aid,now())
         except Exception:
-            if not replay:self.p.state['timelines'].pop(control_id,None)
+            if not replay:
+                self.p.state=before
+                if aid is not None:self.p._runs.pop(aid,None)
             raise
-        aid=self.e.identity(access)
         if not replay:
             self.ui['timelines'][control_id]={'name':name.strip()+' — access history','archived':False,'system':True}
         archived=self.ui['access'].get(aid,{}).get('archived',False) if replay else False

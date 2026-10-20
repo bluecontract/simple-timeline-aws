@@ -57,8 +57,9 @@ class AccessTests(unittest.TestCase):
             self.assertEqual(c.p.state['timelines'][cid]['owner'], '__provider__')
             self.assertTrue(c.ui['timelines'][cid]['system'])
             entries = self.history(control)
-            self.assertEqual(len(entries), 1)
+            self.assertEqual(len(entries), 2)
             self.assertEqual(c.e.identity(entries[0]['message']), access['blueId'])
+            self.assertEqual(entries[1]['message']['operation'], 'update')
             descriptor = c.p.verifier.attestation(c.descriptor(access['blueId']))
             self.assertEqual(c.e.identity(descriptor['controlTimeline']), cid)
             with self.assertRaisesRegex(ValueError, 'ACCESS_DENIED'):
@@ -68,14 +69,14 @@ class AccessTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'ACCESS_DENIED'):
                 c.create_access('Invalid', [cid], [], 'nested')
         c.update_access(a['blueId'], [], [], 'revoke', archived=True)
-        self.assertEqual(len(self.history(ca)), 2)
-        self.assertEqual(len(self.history(cb)), 1)
+        self.assertEqual(len(self.history(ca)), 3)
+        self.assertEqual(len(self.history(cb)), 2)
         self.assertEqual(c.p.state['access'][b['blueId']]['keys'], ['22' * 32])
         self.assertTrue(c.p.can_read(self.timeline, key='22' * 32))
         self.assertEqual(c.entries(c.e.identity(c.control))['total'], 0)
         c.update_access(b['blueId'], [], [], 'revoke-second', archived=True)
         self.assertFalse(c.p.can_read(self.timeline, key='22' * 32))
-        self.assertEqual(len(self.history(cb)), 2)
+        self.assertEqual(len(self.history(cb)), 3)
 
     def test_retry_conflict_and_restart_preserve_channel_and_revocation(self):
         c = self.c
@@ -86,7 +87,7 @@ class AccessTests(unittest.TestCase):
         self.assertEqual(self.grant('first', restored), a)
         self.assertTrue(restored.ui['access'][a['blueId']]['archived'])
         self.assertEqual(restored.p.state['access'][a['blueId']]['keys'], [])
-        self.assertEqual(len(self.history(self.control(a), restored)), 2)
+        self.assertEqual(len(self.history(self.control(a), restored)), 3)
         before = restored.p.snapshot()
         with self.assertRaisesRegex(ValueError, 'IDEMPOTENCY_CONFLICT'):
             restored.create_access('Changed', [self.tid], ['33' * 32], 'first')
@@ -126,6 +127,17 @@ class AccessTests(unittest.TestCase):
         self.assertNotEqual(self.control(fresh, restored)['url'], restored.control['url'])
         self.assertEqual(restored.object(aid), c.object(aid))
 
+    def test_failed_initial_update_rolls_back_grant_and_public_history(self):
+        before = self.c.p.snapshot()
+        with patch.object(self.c.p, 'update_access', side_effect=ValueError('UPDATE_FAILED')):
+            with self.assertRaisesRegex(ValueError, 'UPDATE_FAILED'):
+                self.grant('failed-initial-update')
+        self.assertEqual(self.c.p.snapshot(), before)
+        self.assertEqual(self.c.list_access(), [])
+        self.assertEqual(self.c.p._runs, {})
+        access = self.grant('failed-initial-update')
+        self.assertEqual(len(self.history(self.control(access))), 2)
+
     def test_compare_and_swap_and_lost_response_create_only_one_history(self):
         table, s3 = MemoryTable(), MemoryS3()
         store = StateStore(table, s3, 'data', self.c.endpoint, 'Example', self.seed)
@@ -139,7 +151,7 @@ class AccessTests(unittest.TestCase):
         self.assertEqual(cold.execute(create, write=True), first)
         self.assertEqual(len(cold.cached.list_access()), 1)
         self.assertEqual(len(cold.cached.list_timelines()), 3)
-        self.assertEqual(len(self.history(self.control(first, cold.cached), cold.cached)), 1)
+        self.assertEqual(len(self.history(self.control(first, cold.cached), cold.cached)), 2)
 
     def test_scoped_http_discovery_and_independent_reader(self):
         import app.handler as http
@@ -176,9 +188,9 @@ class AccessTests(unittest.TestCase):
                 read_timeline.main()
             result = json.loads(output.getvalue())
             self.assertTrue(result['verified'])
-            self.assertEqual(len(result['entries']), 2)
+            self.assertEqual(len(result['entries']), 3)
             self.assertIn('/provider?access=' + a['blueId'], calls)
-            self.assertEqual(calls.count('/timelines/read'), 2)
+            self.assertEqual(calls.count('/timelines/read'), 3)
             c = store.cached
             descriptor = c.descriptor(a['blueId'])
             control = self.control(a, c)

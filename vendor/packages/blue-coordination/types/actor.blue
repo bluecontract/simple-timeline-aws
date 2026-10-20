@@ -1,7 +1,1 @@
-{
-  "name": "Actor",
-  "description": "An identified entity to which a timeline occurrence is attributed. Domain types define its identity details.",
-  "specification": {
-    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
-  }
-}
+{"description":"An identified entity to which a timeline occurrence is attributed. Domain types define its identity details.","name":"Actor","specification":{"blueId":"26NVkgkaq67dYNCRvZASHJvKQUQe1JM1Q3WcLK1NT5dG"}}

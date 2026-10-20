@@ -1,26 +1,4 @@
 {
-  "format": 2,
-  "name": "blue-coordination",
-  "namespace": "Coordination",
-  "version": "0.2.0-rc.2",
-  "previewOnly": true,
-  "language": "Language",
-  "imports": {
-    "Language": {
-      "path": "../blue-language/dist/package.bluepkg"
-    },
-    "Contracts": {
-      "path": "../blue-contracts/dist/package.bluepkg"
-    }
-  },
-  "protocol": {
-    "name": "Coordination / timestamped inputs",
-    "rules": "spec/coordination.md",
-    "requires": {
-      "contracts": "Contracts"
-    },
-    "status": "implementation-candidate"
-  },
   "executionRequires": [
     "Contracts"
   ],
@@ -236,11 +214,39 @@
     {
       "name": "Timeline Channel",
       "path": "types/timeline-channel.blue"
+    },
+    {
+      "name": "Timeline Access Updated",
+      "path": "types/timeline-access-updated.blue"
     }
   ],
-  "readme": "README.md",
   "files": [
     "docs/examples.md",
-    "examples/protocol.json"
-  ]
+    "examples/protocol.json",
+    "spec/timeline-access-events.md"
+  ],
+  "format": 2,
+  "imports": {
+    "Contracts": {
+      "path": "../blue-contracts/dist/package.bluepkg"
+    },
+    "Language": {
+      "path": "../blue-language/dist/package.bluepkg"
+    }
+  },
+  "inputs": [],
+  "language": "Language",
+  "name": "blue-coordination",
+  "namespace": "Coordination",
+  "previewOnly": true,
+  "protocol": {
+    "name": "Coordination / timestamped inputs",
+    "requires": {
+      "contracts": "Contracts"
+    },
+    "rules": "spec/coordination.md",
+    "status": "implementation-candidate"
+  },
+  "readme": "README.md",
+  "version": "0.2.0-access-events.1"
 }

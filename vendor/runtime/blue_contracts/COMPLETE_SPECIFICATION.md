@@ -1,6 +1,6 @@
 # Blue Contracts 1.0
 
-**Edition:** `blue-contracts/2026-09-26-standalone-1`  
+**Edition:** `blue-contracts/2026-10-12-final-gas-1`  
 **Normative form:** one complete specification with executable algorithm appendices
 
 ## Abstract
@@ -51,7 +51,7 @@ A package distributes this specification; it does not install a processor. The p
 
 This edition selects Blue Language package `8XGYNufx24r7Dc5bGoeobcGNCn9roLzSfZCQyHBTaTx4` and its complete specification Text `H7WiYQ6GiWypRdFyWRcv99dsvTv6WnJYnu9eLYPQmWnc`. Language is a direct prerequisite: document admission, effective types, specialization, exact references, specification metadata, cyclic identities and BlueIds use its defined operations.
 
-This edition requires Blue BEX package `BvEGHEYgu4pg5QrW6cNcPho8tTBjcUuVtX645CmwDid8`, protocol specification `Bw4AZNwewBkkWcbAak2XZtHuQyPisS7PNvQfux3tESUj`, and normative rules Text `FcGJPnNHZ9KzB8JSwXsdvrbXQSqBYXrESPZJF35brUUk`. Every BEX-bearing position in an invocation uses that evaluator contract and the host interfaces defined here. Selecting another package or operator table MUST NOT substitute another BEX mode. BEX values and proposed effects are not automatically admitted Blue values; the output boundaries below are mandatory.
+This edition requires Blue BEX package `6L2cQG3oSX4WPkXoTvGXeTEjn41WYnjdNKSo1F61xonc`, protocol specification `9X3Ws96pyH1SdP4yuXpkNfWPfW3vJCzDzhdza3u9NpoB`, and normative rules Text `8ncKHLULWkzyNKEHfzpswF6iKZfc3H1DzDpgH8UC1hV`. Every BEX-bearing position in an invocation uses that evaluator contract and the host interfaces defined here. Selecting another package or operator table MUST NOT substitute another BEX mode. BEX values and proposed effects are not automatically admitted Blue values; the output boundaries below are mandatory.
 
 Coordination is not a prerequisite of Contracts. A higher-level host may establish external ordering, authority and durable histories; it supplies the original accepted event and timestamp through the public transition defined here. Contracts does not query a timeline provider or assign actor authority on its own.
 
@@ -103,10 +103,10 @@ The original event's identity is established with the unchanged validated Langua
 | `APPLIED` | Complete resulting state and selected-root emissions | The attempt can commit, including graceful termination. |
 | `FAILED` | Original input snapshot; no public events | Invalid call, invalid effect, validation failure, explicit BEX failure, unsupported demanded executable or another defined Contracts error. |
 | `GAS_LIMIT_EXCEEDED` | Original input snapshot; no public events | The next logical charge exceeds the shared or owner-local remaining allowance. The admitted prefix and rejected charge are reported. |
-| `NEEDS_RESOURCES` | Original input snapshot; no public events | Required exact content or managed-view evidence is unavailable. This suspended attempt reports no completed semantic gas ledger; rerun from the original inputs after evidence is supplied. |
+| `NEEDS_RESOURCES` | Original input snapshot; no public events | Required exact content or managed-view evidence is unavailable. This suspended attempt reports no completed semantic gas result; rerun from the original inputs after evidence is supplied. |
 | `TERMINATED` | Original input snapshot; no public events | The selected root was already legitimately terminated. |
 
-Invalid SDK arguments, invalid fresh Source admission and invalid configuration may raise `ContractError` before a runnable attempt exists. They are never a successful partial processing result. Gas and traces returned with a failed runnable attempt are diagnostic, not committed application effects.
+Invalid SDK arguments, invalid fresh Source admission and invalid configuration may raise `ContractError` before a runnable attempt exists. They are never a successful partial processing result. Gas and the compact rejection details returned with a failed runnable attempt are diagnostic, not committed application effects.
 
 An explicit `initialize(document)` lifecycle action is also provided. It has no invented external event or timestamp. It returns an `Outcome`. `create(document)` is a convenience that requires successful initialization and returns its document. `admit(members, root, bindings)` is a graph authoring facility, not an alternative event ingress. Its `Link` objects and symbolic member labels are not legal runtime patch values.
 
@@ -133,7 +133,7 @@ Exact managed bindings are updated from completed results by the processor. This
 
 ### 3.2 Completion records
 
-`TurnCompletion`, `RoundSeal` and `UnitCompletion` are closed processor records defined in the annex, not new top-level contract categories or user-authored business documents. A completion binds exact before/after views, the original cause, relevant frozen local inputs, the profile, ordered event occurrences and its logical work segment. Its source events contain no parent paths. Each receiver supplies and checks its own captured occurrence tickets.
+`TurnCompletion`, `RoundSeal` and `UnitCompletion` are closed processor records defined in the annex, not new top-level contract categories or user-authored business documents. A completion binds exact before/after views, the original cause, relevant frozen local inputs, the profile, ordered event occurrences and its scalar gas contribution. Its source events contain no parent paths. Each receiver supplies and checks its own captured occurrence tickets.
 
 A value shaped like a completion is not evidence it was executed. Accept only a result produced through the current attempt's verified chunk protocol, or an implementation's explicitly verified equivalent result with all the same bindings. Merely verifying the after-document's BlueId does not establish the calculation. This revision defines no public third-party proof-admission protocol.
 
@@ -540,17 +540,25 @@ All extension callbacks obey the same frame and completion boundary. An UPDATE e
 <a id="section-17"></a>
 ## 17. Logical gas and host-independent resource semantics
 
-**C29.** the logical gas schedule appendix and the metering appendix define the exact logical meter. The shared maximum and default remain **100,000**. There are no unrelated structural/resource ceilings. Gas MUST NOT be increased beyond the specified maximum, disabled, or charged by host time or memory. Existing numerical tariffs are retained unless an explicitly recorded and qualified metering correction is necessary. Any such correction must define its exact counter, units, charge position and order before publication; preserve BEX value/evaluation semantics and distinguish the changed gas edition from physical optimization.
+This edition retains the shared default and maximum of 10,000,000 gas units per entire atomic attempt, including embedded members and cyclic rounds. Numerical tariffs, debit ordering, rejected-charge accounting and rollback are unchanged. Explicit smaller invocation budgets and member-local ceilings remain supported.
 
-One shared ledger covers the complete rooted attempt; the default/maximum shared allowance remains 100000. Member ceilings are additional constraints on that same logical ledger. A charge is `(ordinal, namespace, counter, units, amount, owner)` and is debited before its work. Retain the defined shared/local exhaustion tie-break and rejected-charge accounting. Rollback does not refund admitted work.
+Prior editions retain their original identities and their specified maximum: 100,000 for the earlier editions and 10,000,000 for the preceding gas-10m edition. Hosts MUST select the rules and budget maximum bound to a document's edition and MUST NOT silently upgrade retained snapshots, invocations or receipts. The allowance is permission for logical work, not a CPU or memory reservation or a guarantee of physical completion.
 
-The canonical logical schedule is the dependency order, local turn order and component-round order in the annex. Chunk dispatch, transport, wall time and physical cache reads create no extra semantic charges. A cached chunk supplies the same verified logical segment; replay it against the attempt's current ledger **before** accepting any effects. It cannot skip work, reset allowances, erase a rejected prefix or be merged twice. Runtime callback namespaces and sealed runtimeLedger rules follow the metering appendix.
+**C29.** the logical gas schedule appendix and the metering appendix define the exact logical meter. The shared maximum and default remain **10,000,000**. There are no unrelated structural/resource ceilings. Gas MUST NOT be increased beyond the specified maximum, disabled, or charged by host time or memory. Existing numerical tariffs are retained unless an explicitly recorded and qualified metering correction is necessary. Any such correction must define its exact counter, units, charge position and order before publication; preserve BEX value/evaluation semantics and distinguish the changed gas edition from physical optimization.
+
+One shared scalar gas meter covers the complete rooted attempt; the default/maximum shared allowance remains 10000000. Member ceilings are additional constraints on that same meter. Charge the specified amount before its work; update the total and any configured member-local total. Accepted charges have no canonical row, ordinal or transcript. Retain the shared/local exhaustion tie-break and one compact first-rejected-charge diagnostic. Rollback does not refund admitted work.
+
+This edition removes accepted-charge traces from outcomes, receipts, portable chunks and completion records. The deterministic final admitted `gas` total is the public metering result. Optional debug traces are noncanonical, off by default, and MUST NOT affect identities, replay, state or charge decisions. They are not required for conformance or durable publication. Prior editions and their receipts keep their original meanings.
+
+Turn and unit records carry a scalar `gas` contribution instead of `workSegment`. Continuation commitments bind the current shared total and configured member-local totals, not an accepted-charge transcript. A scalar supplied by an untrusted worker is not proof of execution. Verify execution against the captured input and current remaining budgets, or use an unchanged trusted in-process result; re-execute when a cached result cannot establish the exact exhaustion boundary. Never debit an unaffordable completed scalar and claim it is the first rejected primitive charge.
+
+The canonical logical schedule is the dependency order, local turn order and component-round order in the annex. Chunk dispatch, transport, wall time and physical cache reads create no extra semantic charges. A cached chunk supplies the same verified execution and scalar gas contribution; verify it against the attempt's current meter **before** accepting any effects. It cannot skip work, reset allowances, erase a rejected prefix or be merged twice. Runtime callback namespaces and sealed runtimeLedger rules follow the metering appendix.
 
 A standalone `process(B, e, t)` includes its own setup and root projection. Its scalar gas is not blindly added to another standalone `process(A, ...)`. Full equivalence uses one normalized attempt: shared preflight/finalization once, each logical member computation once per prescribed turn, each receiver's required application work, and the selected root's projection once.
 
 The protocol has no separate maximum document/edge count, contract-map size, workflow-step count, patch/emission/route/dispatch count, turn/round count, content/path/filter/program depth, executable-body size, token length or generalization-search length. Keep the required syntax/normalization and exact value/format rules; remove only the unrelated resource ceilings. Explicit authored constraints and supported stricter member gas budgets remain enforceable.
 
-The standard whole-attempt gas maximum is still 100,000, not 100,000 per member, page, chunk or component round. Existing explicitly selected lower test/invocation budgets and member-local ceilings remain supported and bound into execution evidence; a machine-specific shortage must not silently lower the authoritative budget. Exactly spending the remaining gas is allowed if no further charged work is required; the next unaffordable charge is rejected before its corresponding work. Do not change the existing tie-break or first-rejected-charge record.
+The standard whole-attempt gas maximum is still 10,000,000, not 10,000,000 per member, page, chunk or component round. Existing explicitly selected lower test/invocation budgets and member-local ceilings remain supported and bound into execution evidence; a machine-specific shortage must not silently lower the authoritative budget. Exactly spending the remaining gas is allowed if no further charged work is required; the next unaffordable charge is rejected before its corresponding work. Retain the existing tie-break and rejected-charge fields except the legacy ordinal; this edition does not record an accepted-charge position.
 
 All repeatable semantic progress formerly protected only by a removed count guard must have a defined positive logical charge or a finite structural termination argument. A scalar-expression base charge is not evidence that arbitrary-size arithmetic, copying or materialization is adequately metered. Review these paths before claiming gas-bounded processing. Reuse defined counters/quantities where they already describe the work; do not derive costs from Language's physical step count, a worker timeout, cache warmth or bytes actually fetched from a warm/cold database.
 
@@ -561,11 +569,11 @@ Gas is a portable work rule, not a promise of a fixed number of milliseconds, by
 
 **C30.** A sealed child or component completion is a **calculated value**, not a separately committed document. All affected state, output, protected markers, channel lifetimes and graph identities remain tentative until the entire selected attempt succeeds. Any failure rolls back the entire attempt; public events are empty on failure. Retain admitted gas diagnostics under the stated failure policy.
 
-**Physical interruption is not a completed failure.** Memory/stack exhaustion, a configured host work cutoff, timeout/cancellation, unavailable storage or a failed worker before completion must not be translated into `GAS_LIMIT_EXCEEDED`, semantic `FAILED`, `TERMINATED` or invalid input merely because execution stopped. Unwind or abandon the tentative attempt and communicate a typed host/incomplete condition outside the canonical Outcome. The original committed state and input remain authoritative. A partial gas trace is diagnostic evidence only, not a completed receipt or terminal input disposition. Missing exact content continues to use the supported `NEEDS_RESOURCES` mechanism. If publication may already have committed, reconcile its original identity before another execution.
+**Physical interruption is not a completed failure.** Memory/stack exhaustion, a configured host work cutoff, timeout/cancellation, unavailable storage or a failed worker before completion must not be translated into `GAS_LIMIT_EXCEEDED`, semantic `FAILED`, `TERMINATED` or invalid input merely because execution stopped. Unwind or abandon the tentative attempt and communicate a typed host/incomplete condition outside the canonical Outcome. The original committed state and input remain authoritative. A partial gas total is diagnostic evidence only, not a completed receipt or terminal input disposition. Missing exact content continues to use the supported `NEEDS_RESOURCES` mechanism. If publication may already have committed, reconcile its original identity before another execution.
 
 Checkpoint settlement occurs at the end of the eligible member turn so its completed state contains the consumed-original-event checkpoint. Validate the same activation and channel generation; retire old checkpoints on generation change. Later structural edits cannot transfer these records to a replacement. Final graph verification still runs before returning APPLIED. A parent that merely receives a child batch gets no external checkpoint from that receipt.
 
-**C31.** Replay fixes the exact starting snapshot, original event, microsecond time, release, Language/BEX profiles, runtime bindings, selected exact dependency views and gas policy. It reproduces the exact resulting documents, root output occurrence order, checkpoints, status and canonical logical work/gas trace. Physical task identifiers, storage fetch order and cache statistics are not semantic trace fields.
+**C31.** Replay fixes the exact starting snapshot, original event, microsecond time, release, Language/BEX profiles, runtime bindings, selected exact dependency views and gas policy. It reproduces the exact resulting documents, root output occurrence order, checkpoints, status and canonical logical work evidence and final gas total. Physical task identifiers, storage fetch order and cache statistics are not semantic trace fields.
 
 ### 16.1 Required composition property
 
@@ -619,7 +627,7 @@ An external channel receives its exact member, input document, channel key and g
 
 The hardening edition corrects a reference defect in the source-turn commitment used by emitted occurrences. Execution certificates include invocation-wide logical work and remain bound and checked as execution evidence. Such a certificate must not rename a member's application emissions merely because a different containing root drove the same semantic turn. The semantic incoming commitment binds each ordered batch's source member, serial, completed after-view, ordered emitted occurrences and captured occurrence tickets, together with the turn's existing cause, local before-view, dependencies, seeds, phase and lifecycle. The complete certificate remains in `turnInput` for replay verification. The full certificate remains required execution evidence; its encoding is distinct from the semantic occurrence key.
 
-The local driver can complete an untouched local attempt without allocating portable token/candidate envelopes. It executes the same readiness, work-unit and finalization transitions, including every logical charge and first rejected charge. An attempt that has issued a token or accepted chunk history cannot change driver. Transport identifiers and copies are not logical work. Equivalence qualification compares outcomes, occurrence order, checkpoints, gas traces, rollback and low-budget failures.
+The local driver can complete an untouched local attempt without allocating portable token/candidate envelopes. It executes the same readiness, work-unit and finalization transitions, including every logical charge and first rejected charge. An attempt that has issued a token or accepted chunk history cannot change driver. Transport identifiers and copies are not logical work. Equivalence qualification compares outcomes, occurrence order, checkpoints, final gas totals, rollback and low-budget failures.
 
 Committed local turns retain exact handler/declaration attribution for each patch. This is protected execution evidence used by higher-layer lifecycle policies; submitted documents cannot author trusted attribution. Archive imports preserve original managed-member keys when unambiguous, so independently selected historical roots retain occurrence identity. Exact historical addresses still select their archived state, never an arbitrary newer live alias.
 
@@ -682,7 +690,7 @@ identity. Incomplete or rejected establishment must not issue a result witness.
 
 Canonical transfer tokens and value semantics are defined by the exact-value transfer accounting rules. Read,
 normalization, validation and effect tariffs still apply in their prescribed order.
-The same selected exact descendant has equal traces and rejection behavior under
+The same selected exact descendant has equal final gas and rejection behavior under
 inline, reference, mixed, cached, restored and transported representations.
 <a id="transitions"></a>
 ## Appendix A. Complete transition model
@@ -718,16 +726,16 @@ The invocation descriptor binds the exact input snapshot commitment, original ev
 | `OccurrenceTicket` | `parent`, `parentActivation`, `path`, `source`, `sourceActivation`, `generation`. |
 | `TurnInput` | `member`, `activation`, `beforeView`, `profile`, `cause`, `phase`, `turnSerial`, ordered `dependencies`, ordered `incoming`, ordered `seeds`, `lifecycle` (`{kind:NONE}` or `{kind:INITIALIZE,document:exactPreInitializationRef}`), and exact `logicalContext`. |
 | `EventOccurrence` | `sourceTurn`, zero-based `ordinal`, exact `event`, `identity`. |
-| `TurnCompletion` | `turnInput`, `afterView`, ordered `output`, `memberMetadata`, ordered `edgeChanges`, `consumedSeeds`, `retiredTickets`, `workSegment`, `identity`. |
+| `TurnCompletion` | `turnInput`, `afterView`, ordered `output`, `memberMetadata`, ordered `edgeChanges`, `consumedSeeds`, `retiredTickets`, scalar `gas`, `identity`. |
 | `RoundSeal` | exact preceding and resulting component vectors, round ordinal, ordered local completion identities, their finalized member projection, changed live bindings and identity. |
-| `UnitCompletion` | sorted `members`, exact `beforeViews` and `afterViews`, ordered per-member `turnResults`, per-member `output`, `workSegment`, `identity`. |
+| `UnitCompletion` | sorted `members`, exact `beforeViews` and `afterViews`, ordered per-member `turnResults`, per-member `output`, scalar `gas`, `identity`. |
 | `QueueItem` | `kind` LOCAL or EMBEDDED; exact `event`; LOCAL has source occurrence identity; EMBEDDED additionally has source completion and occurrence ticket. |
 | `Frame` | owned working body/metadata; immutable dependency view; local FIFO; own output; suspended handler stack; pending initialization barriers; retired routes; consumed seeds. Mutable and never exported. |
 | `ChunkToken` | attempt identity, selected unit, exact TurnInput/round descriptors, logical sequence position, expected input/output dependencies, meter/logical-proof prefix commitments; one-use token. |
 
 `beforeView`/`afterView` mean exact local content **plus** selected managed bindings/required component proof, not only a projected business object. An `incoming` row is closed: `{kind:DAG, sourceCompletion, tickets}` for an acyclic/outside-unit source, or `{kind:CYCLIC, sourceCompletion, roundSeal, tickets}` for an intra-unit source. `tickets` is the ordered receiver-ticket list. The cyclic variant carries the exact finalized source projection and is not a new external event. Seeds keep the existing member, activation, channel, generation and selected operation identity/key facts. `logicalContext` binds the canonical metering proof/manifest inventory, not physical cache residency.
 
-Compute `sourceTurn = digest(turn-input-domain, semantic TurnInput fields excluding logicalContext)`; accounting-prefix evidence must not change the identity of the same semantic local turn; `EventOccurrence.identity = digest(event-domain, {sourceTurn, ordinal, event})`. The source key is retained when rerooting an existing managed snapshot. Do not rebuild B as a fresh differently initialized root and call it the same reusable turn. A receiver observation identity binds the source occurrence identity and the full occurrence ticket. Turn-result identities bind the listed content excluding their own identity field; unit and round identities likewise bind all listed fields except their own identity field, using their respective versioned domains. Work rows inside a completion use relative ordinals; flatten them into the common attempt's canonical work order on acceptance. Snapshot record roots/revisions remain attempt-specific.
+Compute `sourceTurn = digest(turn-input-domain, semantic TurnInput fields excluding logicalContext)`; accounting-prefix evidence must not change the identity of the same semantic local turn; `EventOccurrence.identity = digest(event-domain, {sourceTurn, ordinal, event})`. The source key is retained when rerooting an existing managed snapshot. Do not rebuild B as a fresh differently initialized root and call it the same reusable turn. A receiver observation identity binds the source occurrence identity and the full occurrence ticket. Turn-result identities bind the listed content excluding their own identity field; unit and round identities likewise bind all listed fields except their own identity field, using their respective versioned domains. Gas contributions inside a completion are scalars; verify them against the captured execution and budgets on acceptance. No accepted-charge rows are serialized. Snapshot record roots/revisions remain attempt-specific.
 
 Before a closed record is admitted, reject unknown fields and invalid variants, verify content identities, validate monotonic serials and prove every referenced component/binding. `identity` fields never authenticate execution by themselves.
 
@@ -750,7 +758,7 @@ PROCESS(input, event, time):
     validate all affected owned/containing contexts and protected records
     settle topology/revision bookkeeping once for this invocation
     project only selected-root output occurrences in canonical creation order
-    return APPLIED with the complete graph, output and normalized gas ledger
+    return APPLIED with the complete graph, output and final gas total
 
 INITIALIZE(input):
     open the same isolated machine with Cause(INITIALIZE)
@@ -911,7 +919,7 @@ RUN_CYCLIC_UNIT(U):
     expose one UnitCompletion to outside containers
 ```
 
-A member without work does not rerun its external operation merely because a peer changed state. At the round boundary all member references are made coherent; pure identity/reference changes do not create another round. Internally generated events and lifecycle work do. All applicable member-local gas ceilings and the shared 100,000 maximum remain live across rounds; no independent structural turn/round limit applies.
+A member without work does not rerun its external operation merely because a peer changed state. At the round boundary all member references are made coherent; pure identity/reference changes do not create another round. Internally generated events and lifecycle work do. All applicable member-local gas ceilings and the shared 10,000,000 maximum remain live across rounds; no independent structural turn/round limit applies.
 
 Within a round, peer and self-edge reads use V, never a result produced earlier in the member-key loop. Local owned-field reads use the current frame as usual. At the next round, peers see the just sealed V'. This is deterministic even if turn calculations are physically parallel; logical acceptance/metering remains member-key ordered.
 
@@ -965,7 +973,7 @@ A unit may not seal outward while it has a pending dependency that can still sup
 
 Keep the original input snapshot immutable. APPLIED alone authorizes publication of the full attempt result. Any invalid request, patch, received completion, identity, protected state, callback or final containing constraint rolls back every tentative frame/completion/marker/output in the attempt. Deterministic gas exhaustion has its existing exact rollback and rejected-charge behavior. A physical resource/cancellation exception abandons the tentative attempt without constructing a canonical semantic failure.
 
-For GAS_LIMIT_EXCEEDED preserve admitted rows and the first rejected charge, not speculative suffix work. For NEEDS_RESOURCES preserve the original state and the defined missing-resource disposition; do not invent a completed gas receipt or a successful prefix. A physical cancellation is not a fabricated protocol gas error. Propagate a typed incomplete/host condition through every callback, Language bridge, BEX boundary, chunk driver and receiving adapter; do not let a broad exception wrapper turn it into invalid evidence or invalid input. No terminal result, input-disposition or checkpoint is issued from the unfinished attempt.
+For GAS_LIMIT_EXCEEDED preserve the admitted gas total and the first rejected charge, not speculative suffix work. For NEEDS_RESOURCES preserve the original state and the defined missing-resource disposition; do not invent a completed gas receipt or a successful prefix. A physical cancellation is not a fabricated protocol gas error. Propagate a typed incomplete/host condition through every callback, Language bridge, BEX boundary, chunk driver and receiving adapter; do not let a broad exception wrapper turn it into invalid evidence or invalid input. No terminal result, input-disposition or checkpoint is issued from the unfinished attempt.
 
 Finalization uses only sealed owned states. Substitute current verified member-local edges, run the real Language cyclic-set finalizer, retain owning-set proofs, rebuild outside references dependency-first, validate every affected context, and write invocation revision/topology generation once. No finalizer invokes business update/event handlers. Root projection records only root-origin occurrences; other completions remain internal result evidence.
 
@@ -993,7 +1001,7 @@ An acyclic subgraph may be calculated in a separate process and transported as e
 
 **Dynamic graphs:** chunk acceptance follows A08/A09. A join can invalidate a formerly independent cut. Preserve completed turns and promote the remaining work; never force a precomputed stale partition to finish as if topology had not changed. Equivalence covers identical execution of this state machine, not arbitrary regrouping that changes its semantic turns.
 
-A native implementation can use a single heap, an explicit continuation object, serialization between chunks, or verified computation reuse. It must have no visibility into another member's unsealed frame and must preserve the logical trace. Parallel wall-clock completion order is ignored.
+A native implementation can use a single heap, an explicit continuation object, serialization between chunks, or verified computation reuse. It must have no visibility into another member's unsealed frame and must preserve the logical work evidence and final gas total. Parallel wall-clock completion order is ignored.
 
 ### A12. Helper contracts and integration
 
@@ -1032,14 +1040,14 @@ on physical resource interruption before completion:
     if a publication was attempted and may have committed, reconcile first
 ```
 
-Logical-work inventory is not physical cache inventory. Keep the old meter for work whose charge is already specified; optional cached results must produce the same successful/rejected prefix as uncached execution. Any uncovered input-dependent primitive needs an explicitly specified metering correction before final conformance is claimed, not an arbitrary size ceiling or a hardware-dependent tariff. Work done by a standalone Language authoring call or provider prefix acquisition is not silently put into an unrelated Contracts invocation's 100,000 ledger.
+Logical-work inventory is not physical cache inventory. Keep the old meter for work whose charge is already specified; optional cached results must produce the same successful/rejected prefix as uncached execution. Any uncovered input-dependent primitive needs an explicitly specified metering correction before final conformance is claimed, not an arbitrary size ceiling or a hardware-dependent tariff. Work done by a standalone Language authoring call or provider prefix acquisition is not silently put into an unrelated Contracts invocation's 10,000,000 ledger.
 
 <a id="metering"></a>
 ## Appendix B. Logical metering and schedule
 
 ### Common ledger
 
-There is one shared live ledger for the entire `process` or `initialize` attempt, maximum/default 100000, plus optional member-local ceilings. Charge before work. Retain the defined owner field, admitted prefix, first rejected charge, tie-break, domain-integer checks and extension namespace rules in `reference/model.py` and `reference/runtime.py`.
+There is one shared live ledger for the entire `process` or `initialize` attempt, maximum/default 10000000, plus optional member-local ceilings. Charge before work. Retain configured member-local totals, the admitted total, first rejected charge, tie-break, domain-integer checks and extension namespace rules in `reference/model.py` and `reference/runtime.py`.
 
 Failed state rolls back, not admitted work. NEEDS_RESOURCES has an incompatible's no-completed-ledger disposition. Physical queue storage, network transfer, cache hits and task IDs are not tariffs. Logical input facts and validation proofs are distinct from physical caches.
 
@@ -1075,11 +1083,11 @@ For new-child initialization, source initialization work belongs to the child; r
 
 ### Normal form and cached completions
 
-The reference logical order is A01 setup, initialization units, input units, member/round order, and final projection. Every local work segment has relative ordinals, stable owner keys and an input logical-proof prefix. On chunk acceptance, validate and append that same segment in the canonical order; physical completion order is irrelevant.
+The reference logical order is A01 setup, initialization units, input units, member/round order, and final projection. Each completed unit has a scalar gas contribution and an input logical-proof commitment. On chunk acceptance, verify the same execution under the captured current budgets; physical completion order is irrelevant.
 
 A cached segment with a different logical proof inventory, dependency context, profile, seed selection or budget-prefix semantics cannot be copied unchanged. Re-execute the local kernel or derive/verify its exact normal-form work through the implementation's supported equivalent path. It is never sufficient to set gas to the cache lookup cost. A previously admitted segment cannot merge twice for the same logical chunk; distinct receiving occurrences still have their own application costs.
 
-Retain the defined rejected-charge behavior: stop before the first work item that exceeds shared or owner-local remaining gas, return its exact rejected charge, and expose no state/output. Speculative work beyond that point is physical diagnostic work only. Do not execute an unbounded speculative callback merely to discover a ledger. It must follow the declared live or verifiable work-ledger contract; the 100,000 shared ceiling is not reset for it. Physical interruption abandons speculation and is not a semantic rejection.
+Retain the defined rejected-charge behavior: stop before the first work item that exceeds shared or owner-local remaining gas, return its exact rejected charge, and expose no state/output. Speculative work beyond that point is physical diagnostic work only. Do not execute an unbounded speculative callback merely to discover its cost. A live callback charges the parent before work. A sealed callback enforces its captured allowance before every primitive, then merges its admitted scalar once and reproduces any first rejected charge; the 10,000,000 shared ceiling is not reset for it. Physical interruption abandons speculation and is not a semantic rejection.
 
 Consequently:
 
@@ -1097,15 +1105,15 @@ The latter contains repeated top-level setup/root projection and can be a differ
 
 ### Required gas qualification
 
-Run direct/chunk differential cases at ample gas, exact-success allowance, one unit below it, and restrictive member-local ceilings. Compare ordered rows, admitted total, first rejection, owner attribution, state and public output. Include zero-event state propagation, duplicate paths, cold storage, callbacks, cyclic rounds, initialization, late failure and a retired receipt. Generated runtime totals must come from that implemented profile; none are supplied as invented golden numbers here.
+Run direct/chunk differential cases at ample gas, exact-success allowance, one unit below it, and restrictive member-local ceilings. Compare admitted total, first rejection, configured member-local budget enforcement, state and public output. Accepted-charge row sequences are not observations. Include zero-event state propagation, duplicate paths, cold storage, callbacks, cyclic rounds, initialization, late failure and a retired receipt. Generated runtime totals must come from that implemented profile; none are supplied as invented golden numbers here.
 
 ### No unrelated protocol ceilings
 
-The structural `limits` entries are removed from the current manifest. Preserve `sharedMaximum: 100000`, all existing numerical weights, the default maximum, legitimate smaller bound budgets and member ceilings. Keep caches and I/O pages bounded independently: their size changes neither legal content nor completed logical gas.
+The structural `limits` entries are removed from the current manifest. Preserve `sharedMaximum: 10000000`, all existing numerical weights, the default maximum, legitimate smaller bound budgets and member ceilings. Keep caches and I/O pages bounded independently: their size changes neither legal content nor completed logical gas.
 
-A valid computation may exceed an old document, step, depth or numeric-text limit while remaining within gas. It must not hit that obsolete semantic guard. A computation whose prescribed logical work exceeds 100,000 still fails at the real first unaffordable charge. Neither a bigger machine nor more chunks changes that boundary.
+A valid computation may exceed an old document, step, depth or numeric-text limit while remaining within gas. It must not hit that obsolete semantic guard. A computation whose prescribed logical work exceeds 10,000,000 still fails at the real first unaffordable charge. Neither a bigger machine nor more chunks changes that boundary.
 
-A host unable to calculate or retain a valid under-budget outcome has not established a gas failure. Report incompleteness/operational fault, preserve pending input and stable state, and retry only with valid captured semantics. Do not publish a completed ledger assembled from a partial trace or estimate missing work using CPU time.
+A host unable to calculate or retain a valid under-budget outcome has not established a gas failure. Report incompleteness/operational fault, preserve pending input and stable state, and retry only with valid captured semantics. Do not publish a completed gas result assembled from an incomplete computation or estimate missing work using CPU time.
 
 ### Metering conformance
 
@@ -1113,7 +1121,7 @@ Meter every operation before performing its charged work. Existing graph/header,
 
 ### Resource-proportional charging
 
-The standard/default maximum remains 100000. Structural `limits` is empty.
+The standard/default maximum remains 10000000. Structural `limits` is empty.
 BEX adds the unit-weight counters `integerWork`, `textWork`, `valueMember`, with
 quantities and debit ordering defined in its resource-revision section. The same
 Contracts meter and current owner receive those debits; no nested budget resets.
@@ -1343,8 +1351,8 @@ removes accidental duplicate establishment, not actual reads or new construction
 ```json
 {
   "profile": "contracts-deterministic-gas-4",
-  "status": "Fourth corrective edition: representation-independent selected-descendant identity evidence and exact-value transfers; retains occurrence-based comparison, prepaid construction and shared maximum 100000.",
-  "sharedMaximum": 100000,
+  "status": "Ten-million-gas edition: shared default and maximum 10000000; numerical tariffs, charge ordering and rollback are unchanged.",
+  "sharedMaximum": 10000000,
   "weights": {
     "processInvocation": 20,
     "deliverySnapshotEntry": 1,
@@ -1855,7 +1863,7 @@ class Attempt:
         wire=committed('chunk-result',dict(token=token.identity,
             outcome=outcome.observations() if outcome is not None else None,
             snapshot=run.state.wire(),events=run.events,work=run.work,changes=run.changes,
-            checkpoints=run.writes,gas=run.meter.used,gasTrace=run.meter.trace,rejected=run.meter.rejected,
+            checkpoints=run.writes,gas=run.meter.used,rejected=run.meter.rejected,
             turns=run.turns,rounds=run.rounds,units=run.units,logicalPrefix=run.logical_commitment()))
         result=ChunkResult(wire)
         # Store a separate immutable wire copy. Mutating a returned object cannot
@@ -1868,7 +1876,7 @@ class Attempt:
         descriptor=token.descriptor if isinstance(token,ChunkToken) else closed(token,{'format','token','input','history'})['token']
         require(self._token is not None and descriptor==self._token._descriptor, 'STALE_CHUNK_TOKEN')
         wire=completion.to_data() if isinstance(completion,ChunkResult) else deepcopy(completion)
-        closed(wire,{'identity','token','outcome','snapshot','events','work','changes','checkpoints','gas','gasTrace','rejected','turns','rounds','units','logicalPrefix'})
+        closed(wire,{'identity','token','outcome','snapshot','events','work','changes','checkpoints','gas','rejected','turns','rounds','units','logicalPrefix'})
         require(wire['token']==self._token.identity, 'CHUNK_INPUT_MISMATCH')
         require(committed('chunk-result',{k:v for k,v in wire.items() if k!='identity'})==wire,'INVALID_CHUNK_COMMITMENT')
         candidate=self._candidates.get(wire['identity'])
@@ -2177,7 +2185,7 @@ class CompletionMachine:
         return bool(phase.pending[key] or key in phase.initialization or phase.seeds.get(key))
 
     def run_unit(self, phase, members):
-        start = len(self.meter.trace)
+        start = self.meter.used
         before = vector(self.state, members)
         turn_start = len(self.turns)
         while True:
@@ -2245,7 +2253,7 @@ class CompletionMachine:
         self.units.append(committed('unit-result', {
             'members': list(identity), 'beforeViews': before, 'afterViews': vector(self.state, members),
             'turnResults': [t['identity'] for t in self.turns[turn_start:]], 'output': output,
-            'workSegment': self.relative_segment(start)}))
+            'gas': self.meter.used-start}))
 
     def route_batch(self, phase, batch, members, *, internal):
         grouped = defaultdict(list)
@@ -2268,9 +2276,6 @@ class CompletionMachine:
                 phase.done.discard(next((tuple(sorted(g)) for g in phase.groups if parent in g), (parent,)))
             else:
                 phase.outside.append(selected)
-
-    def relative_segment(self, start):
-        return [{**row, 'ordinal': i} for i, row in enumerate(self.meter.trace[start:])]
 
     def install_inputs(self, key, incoming):
         from .model import segments
@@ -2314,7 +2319,7 @@ class CompletionMachine:
         self.activation=deepcopy(self.activation)
         self.state = sealed.copy()
         self.graph = self.fork_graph(self.state)
-        start = len(self.meter.trace)
+        start = self.meter.used
         work_start = len(self.work)
         changes_start = len(self.changes)
         serial = self.serials[key]
@@ -2378,7 +2383,7 @@ class CompletionMachine:
                 consumedSeeds=[asdict(s) for s in self.frame.consumed],
                 writes=deepcopy(self.frame.writes),
                 retiredTickets=[t.wire() for b in incoming for t in b.tickets if not self.ticket_live(t)],
-                workSegment=self.relative_segment(start)))
+                gas=self.meter.used-start))
             self.turns.append(completion)
             new = set(self.state.documents) - set(sealed.documents)
             owned = new | {key}
@@ -2395,7 +2400,7 @@ class CompletionMachine:
         logical = self.graph.logical
         # These keys are already exact identities/recipes, never cache addresses.
         return digest('contracts.logical-prefix/completion-1', {
-            'gas': self.meter.trace, 'work': self.work,
+            'gas': self.meter.commitment(), 'work': self.work,
             'manifests': sorted(logical.manifests),
             'established': sorted(logical.established,key=canonical),
             'proofs': sorted(logical.proofs,key=canonical),
@@ -3484,7 +3489,7 @@ from blue_bex import GasExhausted
 from blue_bex.gas import DEFAULT as BEX_GAS
 
 SAFE=(1<<53)-1
-DEFAULT_LIMIT=100000
+DEFAULT_LIMIT=10000000
 LIMITS = {}  # No universal structural ceilings; retained compatibility export.
 GAS_PROFILE=json.loads((Path(__file__).resolve().parents[1]/'GAS_MANIFEST.json').read_text())
 TARIFF=GAS_PROFILE['weights']
@@ -3576,7 +3581,7 @@ class Snapshot:
     def identity(self):return digest('contracts.snapshot/completion-1',self.wire())
 class Meter:
     def __init__(self,limit=DEFAULT_LIMIT,local_limits=None,known_members=None):
-        integer(limit,0,DEFAULT_LIMIT);self.limit=limit;self.used=0;self.trace=[];self.rejected=None;self.owner='';self.schedule=dict(BEX_GAS)
+        integer(limit,0,DEFAULT_LIMIT);self.limit=limit;self.used=0;self.rejected=None;self.owner='';self.schedule=dict(BEX_GAS)
         require(local_limits is None or type(local_limits) is dict,'INVALID_LOCAL_LIMITS')
         self.local_limits=dict(local_limits or {});self.local_used={};self.runtime_schedules={}
         for member,ceiling in self.local_limits.items():
@@ -3586,14 +3591,23 @@ class Meter:
     def debit(self,namespace,counter,units,amount):
         if self.rejected is not None:raise GasExhausted(self.rejected['counter'])
         integer(units,maximum=None);integer(amount,maximum=None)
-        row=dict(ordinal=len(self.trace),namespace=namespace,counter=counter,units=units,amount=amount,owner=self.owner)
         shared=self.limit-self.used;local=self.local_limits[self.owner]-self.local_used.get(self.owner,0) if self.owner in self.local_limits else None
         if amount>shared or local is not None and amount>local:
             local_first=local is not None and local<shared
-            self.rejected=dict(row,remaining=local if local_first else shared,cap='LOCAL' if local_first else 'SHARED',sharedRemaining=shared,localRemaining=local)
+            self.rejected=dict(namespace=namespace,counter=counter,units=units,amount=amount,owner=self.owner,remaining=local if local_first else shared,cap='LOCAL' if local_first else 'SHARED',sharedRemaining=shared,localRemaining=local)
             raise GasExhausted(counter)
-        self.trace.append(row);self.used+=amount
-        if self.owner:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
+        self.used+=amount
+        if self.owner in self.local_limits:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
+    @property
+    def trace(self):
+        # Compatibility with the BEX host interface; no accepted-charge records.
+        return ()
+    def commitment(self):return dict(used=self.used,localUsed=dict(sorted(self.local_used.items())))
+    def merge_admitted(self,amount):
+        integer(amount,maximum=None)
+        require(amount<=self.limit-self.used and (self.owner not in self.local_limits or amount<=self.local_limits[self.owner]-self.local_used.get(self.owner,0)), 'RUNTIME_GAS_ALLOWANCE_CHANGED')
+        self.used+=amount
+        if self.owner in self.local_limits:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
     def charge(self,counter,units=1,*,amount=None):self.debit('bex',counter,units,self.schedule[counter]*units if amount is None else amount)
     def contracts(self,counter,units=1):
         integer(units,maximum=None)
@@ -3610,7 +3624,6 @@ class Outcome:
     changes:list=field(default_factory=list)
     checkpoints:list=field(default_factory=list)
     gas:int=0
-    gas_trace:list=field(default_factory=list)
     rejected:Any=None
     diagnostic:Any=None
     completions:list=field(default_factory=list)
@@ -3629,7 +3642,7 @@ class Outcome:
         yield self.gas
     @property
     def commits(self):return self.status=='APPLIED'
-    def observations(self):return dict(status=self.status,input=self.input_identity,output=self.snapshot.identity,invocation=self.invocation,publicEvents=self.public_events,events=self.event_trace,work=self.work_trace,changes=self.changes,checkpoints=self.checkpoints,gas=self.gas,gasTrace=self.gas_trace,rejected=self.rejected,diagnostic=self.diagnostic,completions=self.completions,rounds=self.rounds,units=self.units)
+    def observations(self):return dict(status=self.status,input=self.input_identity,output=self.snapshot.identity,invocation=self.invocation,publicEvents=self.public_events,events=self.event_trace,work=self.work_trace,changes=self.changes,checkpoints=self.checkpoints,gas=self.gas,rejected=self.rejected,diagnostic=self.diagnostic,completions=self.completions,rounds=self.rounds,units=self.units)
     @property
     def receipt(self):return digest('contracts.result/completion-1',self.observations())
 def trampoline(generator):
@@ -3776,14 +3789,14 @@ from .graph import Graph,Archive,prepare_bundle,components
 from .channels import refresh_lifetimes,signature,checkpoint,event_observation,recognize_call,select_seeds
 
 class Processor:
-    def __init__(self, language=None, *, gas_limit=100000, local_limits=None, local_driver=False):
+    def __init__(self, language=None, *, gas_limit=10000000, local_limits=None, local_driver=False):
         self.blue=Bridge(language); self.registry=Registry(self.blue)
         self.archive=Archive(); self.bex=Bex()
         from .receiving import CompletionStore
         self._completion_store=CompletionStore()
         self._completion_reader=None
         self.local_driver=bool(local_driver)
-        integer(gas_limit, 0, 100000)
+        integer(gas_limit, 0, 10000000)
         self.gas_limit=gas_limit; self.local_limits=deepcopy(local_limits or {})
     def typed(self,type_name,**fields):return self.registry.typed(type_name,**fields)
     def install_runtime(self,binding,implementation):self.registry.install(binding,implementation)
@@ -3958,7 +3971,7 @@ class Run(CompletionMachine):
         # An immutable cause token, NOT an external ordering relation.
         return self.event_id
     def fail_result(self,status,diagnostic):
-        return Outcome(status,self.input.copy(),self.input.identity,self.invocation,event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),gas=self.meter.used,gas_trace=deepcopy(self.meter.trace),rejected=deepcopy(self.meter.rejected),diagnostic=diagnostic)
+        return Outcome(status,self.input.copy(),self.input.identity,self.invocation,event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),gas=self.meter.used,rejected=deepcopy(self.meter.rejected),diagnostic=diagnostic)
     def attempt(self):
         from .chunks import Attempt
         attempt=Attempt(self)
@@ -4002,7 +4015,7 @@ class Run(CompletionMachine):
         for event in self.events:
             if event['document']==self.state.root:
                 self.meter.owner=self.state.root;self.meter.contracts('rootEventRecorded');self.public.append(deepcopy(event))
-        result=Outcome('APPLIED',self.state,self.input.identity,self.invocation,public_events=deepcopy(self.public),event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),changes=deepcopy(self.changes),checkpoints=deepcopy(self.writes),gas=self.meter.used,gas_trace=deepcopy(self.meter.trace),completions=deepcopy(self.turns),rounds=deepcopy(self.rounds),units=deepcopy(self.units))
+        result=Outcome('APPLIED',self.state,self.input.identity,self.invocation,public_events=deepcopy(self.public),event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),changes=deepcopy(self.changes),checkpoints=deepcopy(self.writes),gas=self.meter.used,completions=deepcopy(self.turns),rounds=deepcopy(self.rounds),units=deepcopy(self.units))
         self.blue.retain([d.body for _,d in sorted(self.state.documents.items())]);self.engine.archive.add(self.state)
         self.engine._completion_store.remember(self.input,result,self.event_id,self.timestamp)
         return result
@@ -4682,14 +4695,14 @@ class RuntimeMeter:
     """A runtime cannot change ownership, tariffs, or the parent allowance."""
     def __init__(self,parent,binding,owner):
         self.__parent=parent;self.__binding=binding;self.__owner=owner
-        self.__start=parent.used;self.__rows=[];self.__rejected=None;self.__finished=False;self.__merged=False
+        self.__start=parent.used;self.__used=0;self.__rejected=None;self.__finished=False;self.__merged=False
         shared=parent.limit-parent.used
         local=parent.local_limits.get(owner,parent.limit)-parent.local_used.get(owner,0)
         self.__allowance=min(shared,local) if owner in parent.local_limits else shared
 
     @property
     def remaining(self):
-        return self.__allowance-sum(row[2] for row in self.__rows)
+        return self.__allowance-self.__used
 
     def charge(self,counter,units=1):
         require(not self.__finished and self.__rejected is None,'CLOSED_RUNTIME_LEDGER')
@@ -4699,7 +4712,7 @@ class RuntimeMeter:
             self.__parent.owner=self.__owner;self.__parent.debit(self.__binding.namespace,counter,units,amount)
         elif amount>self.remaining:
             self.__rejected=(counter,units,amount);raise GasExhausted(counter)
-        self.__rows.append((counter,units,amount))
+        self.__used+=amount
 
     def finish(self):
         require(self.__binding.meter_mode=='ledger','DOUBLE_GAS_DEBIT')
@@ -4711,7 +4724,7 @@ class RuntimeMeter:
         require(failed or returned is self and self.__finished,'INVALID_RUNTIME_LEDGER')
         require(self.__parent.used==self.__start,'RUNTIME_LEDGER_ALLOWANCE_CHANGED')
         self.__parent.owner=self.__owner
-        for counter,units,amount in self.__rows:self.__parent.debit(self.__binding.namespace,counter,units,amount)
+        self.__parent.merge_admitted(self.__used)
         if self.__rejected:
             counter,units,amount=self.__rejected
             self.__parent.debit(self.__binding.namespace,counter,units,amount)
@@ -5395,24 +5408,25 @@ def host_boundary(fn):
 
 ### Source inventory
 
-| Module | SHA-256 of supplied UTF-8 file |
-|---|---|
-| `src/blue_contracts/reference/__init__.py` | `78bed996244ac5fab47a02c2455614e69b920a4268f0a7fda241a54702b34bef` |
-| `src/blue_contracts/reference/catalogue.py` | `51e75dfa01394a8b2493292d2dfc4c79c3b2031c8035a85882b284126c7585df` |
-| `src/blue_contracts/reference/channels.py` | `1af7e3f1ba921fe0c4adac9d60f0b26e7b0e5c106d8c58fd3a801c3c0310160c` |
-| `src/blue_contracts/reference/chunks.py` | `d1b3c588fb98c0ebaf5b18e2105384c3a38037dba58f2406228d994ad2e3af4e` |
-| `src/blue_contracts/reference/completion.py` | `c46ac5fb09b69ba71d5284f47aed55251acff7aa958e8f1ee2f65d102ec3bd63` |
-| `src/blue_contracts/reference/compute.py` | `147caf84e70bebb5e3dec2bd3f5d437a25b85e172d3d12e1b4c3725f79fa76ba` |
-| `src/blue_contracts/reference/generalization.py` | `1f24b86271755ae5f1b5132c31de85d12d05d2a19c7c4b5d493201b953dff887` |
-| `src/blue_contracts/reference/graph.py` | `106b07e478bf77e2314b28044e0338429958ac58397db83f142ae0d5d8247b17` |
-| `src/blue_contracts/reference/language.py` | `2ae90402ede1299c0cd43c770406e0572ea8b68a384ce0d4bc01734da4b2f889` |
-| `src/blue_contracts/reference/model.py` | `5dc49fa84e457f8c362b88b961e9036a1812a5697958a76cf0f3119a9dcdc145` |
-| `src/blue_contracts/reference/policy.py` | `2423e9d280e20db1d08d8d6c42a8a8e4ab8e53d5f335866a27dd0eb7f2433121` |
-| `src/blue_contracts/reference/processor.py` | `f9f8e70373d970f7cc0ee1a8322317418da154934af2506c8731ebbed755952c` |
-| `src/blue_contracts/reference/receiving.py` | `f5d56b66afd83cc0128883018b412282145238f6a956e4077bb530996039c7ff` |
-| `src/blue_contracts/reference/registry.py` | `93a3b8bad491d80782778e8032798f4671ee2a996f39694d44baa2f700bced6a` |
-| `src/blue_contracts/reference/runtime.py` | `0b33f51fb2d99a01d1867ac24767b4158139de9165eef0f93f86750bf24b9196` |
-| `src/blue_contracts/reference/storage.py` | `eae5dc318c226628d2a68a37175b10232846ed2611b1a8db4a007bbd6266458f` |
-| `src/blue_contracts/reference/work.py` | `bdff38e23e770ce1cd47d99535cd668c59865c301f97b5622bc5c0812e64ff5f` |
-| `src/blue_host/__init__.py` | `ac30b5090d56b101150b3bdb9bb05fff265308737c3ea0dd8b9caa22b0b5b607` |
-
+```json
+{
+  "src/blue_contracts/reference/__init__.py": "78bed996244ac5fab47a02c2455614e69b920a4268f0a7fda241a54702b34bef",
+  "src/blue_contracts/reference/catalogue.py": "51e75dfa01394a8b2493292d2dfc4c79c3b2031c8035a85882b284126c7585df",
+  "src/blue_contracts/reference/channels.py": "1af7e3f1ba921fe0c4adac9d60f0b26e7b0e5c106d8c58fd3a801c3c0310160c",
+  "src/blue_contracts/reference/chunks.py": "489c4b9cdfb4c5e6eaf7a6d12ce4c309b2e47e398917e882614f73cef59ffa22",
+  "src/blue_contracts/reference/completion.py": "25c4b98e9511256368e7398a544a29400410c74aa65bcda8218a950db955685a",
+  "src/blue_contracts/reference/compute.py": "147caf84e70bebb5e3dec2bd3f5d437a25b85e172d3d12e1b4c3725f79fa76ba",
+  "src/blue_contracts/reference/generalization.py": "1f24b86271755ae5f1b5132c31de85d12d05d2a19c7c4b5d493201b953dff887",
+  "src/blue_contracts/reference/graph.py": "106b07e478bf77e2314b28044e0338429958ac58397db83f142ae0d5d8247b17",
+  "src/blue_contracts/reference/language.py": "2ae90402ede1299c0cd43c770406e0572ea8b68a384ce0d4bc01734da4b2f889",
+  "src/blue_contracts/reference/model.py": "03e18943f5d4b9d05ef9ed62c8bb97cf4376986785d60f264d97f031d5ec0c31",
+  "src/blue_contracts/reference/policy.py": "2423e9d280e20db1d08d8d6c42a8a8e4ab8e53d5f335866a27dd0eb7f2433121",
+  "src/blue_contracts/reference/processor.py": "5f7c59d07f3e265f42423f9652e56a5edef474af1d5567adf6c1426e1db1345e",
+  "src/blue_contracts/reference/receiving.py": "f5d56b66afd83cc0128883018b412282145238f6a956e4077bb530996039c7ff",
+  "src/blue_contracts/reference/registry.py": "93a3b8bad491d80782778e8032798f4671ee2a996f39694d44baa2f700bced6a",
+  "src/blue_contracts/reference/runtime.py": "6b53f8a0e312aab38d03905d962fda9476b448fd1c4979b073e2181a48c9b67c",
+  "src/blue_contracts/reference/storage.py": "eae5dc318c226628d2a68a37175b10232846ed2611b1a8db4a007bbd6266458f",
+  "src/blue_contracts/reference/work.py": "bdff38e23e770ce1cd47d99535cd668c59865c301f97b5622bc5c0812e64ff5f",
+  "src/blue_host/__init__.py": "ac30b5090d56b101150b3bdb9bb05fff265308737c3ea0dd8b9caa22b0b5b607"
+}
+```

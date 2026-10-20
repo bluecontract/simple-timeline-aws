@@ -7,7 +7,7 @@ import bootstrap
 from package_core import build,read_package,wire,config,mount,PackageError
 from package_v2 import requirements,lock_v2
 ROOT=bootstrap.ROOT
-REVISION='blue-protocols-2026-09-26-standalone-1'
+REVISION='blue-contracts-2026-10-12-final-gas-1'
 def package_path():return ROOT/'dist/package.bluepkg'
 def checked_package(path=None):
  p=read_package(path or package_path());r=json.loads((ROOT/'release.json').read_text())
@@ -25,6 +25,14 @@ def runtime_tree(output):
    shutil.copyfile(ROOT.parent/'verification/reference/blue-contracts/python/apps/workbench'/f,wb/f)
   shutil.copyfile(ROOT/'SPECIFICATION.md',output/'blue_contracts/COMPLETE_SPECIFICATION.md')
   shutil.copytree(ROOT.parent/'verification/reference/blue-contracts/python/tools',output.parent/'tools',dirs_exist_ok=True)
+ # Apply only the explicitly published source overrides after copying the frozen base.
+ for layer in ('blue-bex', 'blue-contracts'):
+  project=ROOT.parent/layer
+  selection=json.loads((project/'docs/sources.json').read_text())
+  for original,relative in {**selection.get('overrides',{}),**selection.get('resourceOverrides',{})}.items():
+   if not original.startswith('src/'):raise ValueError('Invalid runtime override')
+   destination=output/original[4:];destination.parent.mkdir(parents=True,exist_ok=True)
+   shutil.copyfile(project/relative,destination)
  return output
 
 def main():
@@ -37,19 +45,10 @@ def main():
   if args.path.resolve().is_relative_to((ROOT.parent/'verification/reference/blue-contracts').resolve()):raise ValueError('Never overwrite the frozen reference')
   runtime_tree(args.path);print(args.path);return 0
  if args.command=='build':
-  cfg=config(ROOT);s=ROOT/'spec'/('bex.md' if cfg['name']=='blue-bex' else 'contracts.md')
+  cfg=config(ROOT);s=ROOT/cfg['protocol']['rules']
   if (ROOT/'SPECIFICATION.md').read_bytes()!=s.read_bytes():raise RuntimeError('Root specification and identified specification differ')
-  p=build(ROOT,output=None,revision=REVISION,source_url='')
-  selected=ROOT/'release.json'
-  if selected.exists():
-   r=json.loads(selected.read_text())
-   if p.manifest['packageBlueId']!=r['packageBlueId'] or p.archive_sha!=r['archiveSha256']:
-    raise RuntimeError('Build differs from frozen release; author a deliberate new release instead of replacing it')
-  target=ROOT/'dist';target.mkdir(exist_ok=True)
-  (target/'package.bluepkg').write_bytes(p.archive)
-  for name,data in p.files.items():
-   f=target/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes(data)
-  print(json.dumps({'packageBlueId':p.manifest['packageBlueId'],'archiveSha256':p.archive_sha,'audit':p.audit},indent=2));return 0
+  subprocess.run([sys.executable,str(ROOT.parent/'tools/build_final_gas.py'),'blue-contracts','--check'],check=True)
+  checked_package();return 0
  if args.command in ['verify','inspect','requirements']:
   p=checked_package(args.path)
   result={'verified':True,'packageBlueId':p.manifest['packageBlueId'],'archiveSha256':p.archive_sha,'protocol':p.manifest['protocol'],'language':p.manifest['language'],'audit':p.audit}

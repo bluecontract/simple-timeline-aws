@@ -63,14 +63,14 @@ class RuntimeMeter:
     """A runtime cannot change ownership, tariffs, or the parent allowance."""
     def __init__(self,parent,binding,owner):
         self.__parent=parent;self.__binding=binding;self.__owner=owner
-        self.__start=parent.used;self.__rows=[];self.__rejected=None;self.__finished=False;self.__merged=False
+        self.__start=parent.used;self.__used=0;self.__rejected=None;self.__finished=False;self.__merged=False
         shared=parent.limit-parent.used
         local=parent.local_limits.get(owner,parent.limit)-parent.local_used.get(owner,0)
         self.__allowance=min(shared,local) if owner in parent.local_limits else shared
 
     @property
     def remaining(self):
-        return self.__allowance-sum(row[2] for row in self.__rows)
+        return self.__allowance-self.__used
 
     def charge(self,counter,units=1):
         require(not self.__finished and self.__rejected is None,'CLOSED_RUNTIME_LEDGER')
@@ -80,7 +80,7 @@ class RuntimeMeter:
             self.__parent.owner=self.__owner;self.__parent.debit(self.__binding.namespace,counter,units,amount)
         elif amount>self.remaining:
             self.__rejected=(counter,units,amount);raise GasExhausted(counter)
-        self.__rows.append((counter,units,amount))
+        self.__used+=amount
 
     def finish(self):
         require(self.__binding.meter_mode=='ledger','DOUBLE_GAS_DEBIT')
@@ -92,7 +92,7 @@ class RuntimeMeter:
         require(failed or returned is self and self.__finished,'INVALID_RUNTIME_LEDGER')
         require(self.__parent.used==self.__start,'RUNTIME_LEDGER_ALLOWANCE_CHANGED')
         self.__parent.owner=self.__owner
-        for counter,units,amount in self.__rows:self.__parent.debit(self.__binding.namespace,counter,units,amount)
+        self.__parent.merge_admitted(self.__used)
         if self.__rejected:
             counter,units,amount=self.__rejected
             self.__parent.debit(self.__binding.namespace,counter,units,amount)

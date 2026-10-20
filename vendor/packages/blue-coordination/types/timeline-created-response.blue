@@ -1,14 +1,1 @@
-{
-  "name": "Timeline Created Response",
-  "description": "Optional owner-ingest extension. The exact durable created source.",
-  "type": "Coordination/Provider Response",
-  "timeline": {
-    "type": "Coordination/Signed Timeline",
-    "schema": {
-      "required": true
-    }
-  },
-  "specification": {
-    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
-  }
-}
+{"description":"Optional owner-ingest extension. The exact durable created source.","name":"Timeline Created Response","specification":{"blueId":"26NVkgkaq67dYNCRvZASHJvKQUQe1JM1Q3WcLK1NT5dG"},"timeline":{"schema":{"required":true},"type":"Coordination/Signed Timeline"},"type":"Coordination/Provider Response"}

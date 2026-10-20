@@ -1,12 +1,1 @@
-{
-  "name": "Ed25519 Signature",
-  "description": "Canonical lowercase hex encoding of 64 pure Ed25519 signature bytes.",
-  "type": "Text",
-  "schema": {
-    "minLength": 128,
-    "maxLength": 128
-  },
-  "specification": {
-    "blueId": "HDabLvBQJxuvyExiCCVH8sjscwBidnhjPKUwJ4coATTD"
-  }
-}
+{"description":"Canonical lowercase hex encoding of 64 pure Ed25519 signature bytes.","name":"Ed25519 Signature","schema":{"maxLength":128,"minLength":128},"specification":{"blueId":"26NVkgkaq67dYNCRvZASHJvKQUQe1JM1Q3WcLK1NT5dG"},"type":"Text"}

@@ -1,7 +1,7 @@
 {
   "profile": "contracts-deterministic-gas-4",
-  "status": "Fourth corrective edition: representation-independent selected-descendant identity evidence and exact-value transfers; retains occurrence-based comparison, prepaid construction and shared maximum 100000.",
-  "sharedMaximum": 100000,
+  "status": "Ten-million-gas edition: shared default and maximum 10000000; numerical tariffs, charge ordering and rollback are unchanged.",
+  "sharedMaximum": 10000000,
   "weights": {
     "processInvocation": 20,
     "deliverySnapshotEntry": 1,

@@ -1,0 +1,4 @@
+name: Timeline Access Updated
+description: >
+  A Timeline Access update operation completed successfully.
+  Consumers read the completed access document for current permissions.

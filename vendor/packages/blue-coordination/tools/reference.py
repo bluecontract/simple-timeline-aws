@@ -14,7 +14,7 @@ from urllib.parse import urlsplit
 from algorithms import blue as B
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
-import package as publisher
+from app import protocol_packages as publisher
 
 MAX_TIME = 9007199254740990
 MAX_BOUND = MAX_TIME + 1

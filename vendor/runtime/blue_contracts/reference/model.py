@@ -9,7 +9,7 @@ from blue_bex import GasExhausted
 from blue_bex.gas import DEFAULT as BEX_GAS
 
 SAFE=(1<<53)-1
-DEFAULT_LIMIT=100000
+DEFAULT_LIMIT=10000000
 LIMITS = {}  # No universal structural ceilings; retained compatibility export.
 GAS_PROFILE=json.loads((Path(__file__).resolve().parents[1]/'GAS_MANIFEST.json').read_text())
 TARIFF=GAS_PROFILE['weights']
@@ -101,7 +101,7 @@ class Snapshot:
     def identity(self):return digest('contracts.snapshot/completion-1',self.wire())
 class Meter:
     def __init__(self,limit=DEFAULT_LIMIT,local_limits=None,known_members=None):
-        integer(limit,0,DEFAULT_LIMIT);self.limit=limit;self.used=0;self.trace=[];self.rejected=None;self.owner='';self.schedule=dict(BEX_GAS)
+        integer(limit,0,DEFAULT_LIMIT);self.limit=limit;self.used=0;self.rejected=None;self.owner='';self.schedule=dict(BEX_GAS)
         require(local_limits is None or type(local_limits) is dict,'INVALID_LOCAL_LIMITS')
         self.local_limits=dict(local_limits or {});self.local_used={};self.runtime_schedules={}
         for member,ceiling in self.local_limits.items():
@@ -111,14 +111,23 @@ class Meter:
     def debit(self,namespace,counter,units,amount):
         if self.rejected is not None:raise GasExhausted(self.rejected['counter'])
         integer(units,maximum=None);integer(amount,maximum=None)
-        row=dict(ordinal=len(self.trace),namespace=namespace,counter=counter,units=units,amount=amount,owner=self.owner)
         shared=self.limit-self.used;local=self.local_limits[self.owner]-self.local_used.get(self.owner,0) if self.owner in self.local_limits else None
         if amount>shared or local is not None and amount>local:
             local_first=local is not None and local<shared
-            self.rejected=dict(row,remaining=local if local_first else shared,cap='LOCAL' if local_first else 'SHARED',sharedRemaining=shared,localRemaining=local)
+            self.rejected=dict(namespace=namespace,counter=counter,units=units,amount=amount,owner=self.owner,remaining=local if local_first else shared,cap='LOCAL' if local_first else 'SHARED',sharedRemaining=shared,localRemaining=local)
             raise GasExhausted(counter)
-        self.trace.append(row);self.used+=amount
-        if self.owner:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
+        self.used+=amount
+        if self.owner in self.local_limits:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
+    @property
+    def trace(self):
+        # Compatibility with the BEX host interface; no accepted-charge records.
+        return ()
+    def commitment(self):return dict(used=self.used,localUsed=dict(sorted(self.local_used.items())))
+    def merge_admitted(self,amount):
+        integer(amount,maximum=None)
+        require(amount<=self.limit-self.used and (self.owner not in self.local_limits or amount<=self.local_limits[self.owner]-self.local_used.get(self.owner,0)), 'RUNTIME_GAS_ALLOWANCE_CHANGED')
+        self.used+=amount
+        if self.owner in self.local_limits:self.local_used[self.owner]=self.local_used.get(self.owner,0)+amount
     def charge(self,counter,units=1,*,amount=None):self.debit('bex',counter,units,self.schedule[counter]*units if amount is None else amount)
     def contracts(self,counter,units=1):
         integer(units,maximum=None)
@@ -135,7 +144,6 @@ class Outcome:
     changes:list=field(default_factory=list)
     checkpoints:list=field(default_factory=list)
     gas:int=0
-    gas_trace:list=field(default_factory=list)
     rejected:Any=None
     diagnostic:Any=None
     completions:list=field(default_factory=list)
@@ -154,7 +162,7 @@ class Outcome:
         yield self.gas
     @property
     def commits(self):return self.status=='APPLIED'
-    def observations(self):return dict(status=self.status,input=self.input_identity,output=self.snapshot.identity,invocation=self.invocation,publicEvents=self.public_events,events=self.event_trace,work=self.work_trace,changes=self.changes,checkpoints=self.checkpoints,gas=self.gas,gasTrace=self.gas_trace,rejected=self.rejected,diagnostic=self.diagnostic,completions=self.completions,rounds=self.rounds,units=self.units)
+    def observations(self):return dict(status=self.status,input=self.input_identity,output=self.snapshot.identity,invocation=self.invocation,publicEvents=self.public_events,events=self.event_trace,work=self.work_trace,changes=self.changes,checkpoints=self.checkpoints,gas=self.gas,rejected=self.rejected,diagnostic=self.diagnostic,completions=self.completions,rounds=self.rounds,units=self.units)
     @property
     def receipt(self):return digest('contracts.result/completion-1',self.observations())
 def trampoline(generator):

@@ -2,13 +2,19 @@
 
 A small, self-contained Blue timeline provider with an owner console. It publishes
 signed, timestamped entries and executable Timeline Access documents, using the
-selected `blue-coordination` package.
+selected `blue-coordination` package. This source uses the MyOS-compatible
+**Coordination 0.2.0-access-events.1** and **Contracts 1.0.0-final-gas.1** publications.
+
+**Deploy this protocol upgrade as a new stack.** Snapshots from the previous
+0.2.0-rc.2 runtime are incompatible; replacing its Lambda code does not migrate
+existing signed timelines. Keep the old stack and its data separate.
 
 <!-- DEPLOY_BUTTON -->
-[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2Fd46790172738e13c79c42d7c190d5b338da1966841f4516806c3b7981241f433%2Ftemplate.json)
+[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2F427affad78c905bdc406b323b7e8ed17c228ee72021c774ff1c219571fb75842%2Ftemplate.json)
 <!-- /DEPLOY_BUTTON -->
 
-Enter the **provider name**, **company name**, **website URL**, and a
+Once published, use the deploy button and enter a **new stack name**,
+the **provider name**, **company name**, **website URL**, and a
 **16–128 character console password** in CloudFormation. Company and website may
 be left empty for a personal provider. Acknowledge the IAM resources and create
 the stack. Open the **ConsoleUrl** stack
@@ -86,6 +92,23 @@ convenience API authenticated by the owner session cookie.
 See [the API guide](docs/api.md), [the complete Coordination specification](vendor/packages/blue-coordination/spec/coordination.md),
 and [the infrastructure notes](docs/operations.md).
 
+## MyOS compatibility
+
+Every new Timeline Access document still has its own provider-owned public
+timeline. Its packaged update operation replaces both permission lists atomically
+and emits `Coordination/Timeline Access Updated` once, including unchanged-list
+updates. Invalid updates and retries do not produce another committed occurrence.
+Creation publishes the original document and an initial update in one transaction,
+so the current access document already has the checkpoint required by Activation.
+MyOS can replay that history and react to the event when admitting a party.
+
+The exact archives and source revision are pinned in
+[`vendor/selection.json`](vendor/selection.json). `GET /types` returns the selected
+package under `protocol`, plus all type BlueIds. The Coordination package is
+`4gmSjwn3DCYBVeDieXxuXgsPvvz2dU6ovFXnnuyv2RjA`.
+See [the compatibility checks](tests/compatibility/README.md) for the local MyOS
+verification command and the distinction between initialized and imported access.
+
 ## Develop, test and deploy from source
 
 Python 3.13 is required. The exact Blue runtime and package closure are vendored
@@ -114,3 +137,29 @@ Deployment assets in the dedicated release bucket are publicly readable so the
 button works for another AWS account. The stack’s data and asset buckets are
 private. Only code and the template are uploaded to the public release bucket.
 The deploy command verifies the account ID before making changes.
+
+## Publish the GitHub deploy button
+
+Pushing source to GitHub does not publish the Lambda archive or CloudFormation
+template. Build and publish them first, then commit the verified README link:
+
+```sh
+.venv/bin/python scripts/build_release.py \
+  --release-base https://simple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com/releases
+.venv/bin/python scripts/deploy.py \
+  --account 581571886327 \
+  --release-bucket simple-timeline-releases-581571886327 \
+  --publish-only --update-readme
+```
+
+Use AWS credentials for account `581571886327`. This command publishes code and
+templates, verifies their anonymous downloads, validates the template with
+CloudFormation, and only then updates the button. It does not create or update
+an application stack. The button can then install a new provider in another AWS
+account. A local build alone leaves the README link unchanged.
+
+To reproduce the checked-in vendor directory, run
+`.venv/bin/python scripts/vendor_runtime.py --source ../blue-packages`. This reads
+the pinned Git commit, verifies the published runtime source hashes and archives,
+and applies the documented archive-loader adapter. It does not use that
+checkout's current branch or unpublished changes.

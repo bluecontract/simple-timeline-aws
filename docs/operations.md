@@ -110,11 +110,13 @@ with a process that proves they are not referenced by a retained state pointer o
 backup.
 
 New Timeline Access documents each allocate a dedicated provider-owned public
-timeline in the same atomic state commit as their initial publication. Retrying
+timeline in the same atomic state commit as their initial publication and first
+executed update. That update establishes the provider-channel checkpoint required
+by MyOS Activation. If it fails, the grant and its new public history roll back. Retrying
 creation reuses the recorded document and channel, including after a restart or
 lost response. New requests with identical grants create independent documents.
 Updates and revocations continue on the channel recorded in each document.
-Upgrades preserve older documents on their original shared timeline; no signed
+Within the same protocol edition, upgrades preserve older documents on their original shared timeline; no signed
 document or historical entry is rewritten. The default provider descriptor remains
 available for those histories. Clients reading a newer document use
 `GET /provider?access=<initial-document-BlueId>` and verify its channel before
@@ -127,16 +129,26 @@ conflicts before raising concurrency or traffic.
 
 ## Verified release
 
-The provider was exercised on AWS with owner and anonymous requests, Ed25519
+The earlier 0.2.0-rc.2 provider was exercised on AWS with owner and anonymous requests, Ed25519
 private reads, pagination, entry attestations, access updates and revocation.
 A separate keyless reader verified the public access history. Local tests cover
 restart recovery, compare-and-swap conflicts, lost responses, historical retries,
 unique timestamps and an independent reader that has not preloaded the checkpoint
 head. The owner console was also checked in a browser.
 
-The deployed Coordination archive is byte-for-byte identical to the promoted
-`blue-coordination` 0.2.0-rc.2 package. Its 91 protocol tests passed; the provider has
-21 passing tests, including rejected identity changes, provider identity and endpoint persistence, cold console reads, view freshness after another
-writer's revocation, snapshot migration and secret-refresh cache retention.
-The eight migrated consumer packages reproduced exactly, and
-the shared package integrity check verified 18 distributions and 889 source files.
+The current source selects Coordination `0.2.0-access-events.1` and Contracts
+`1.0.0-final-gas.1`, matching the MyOS access-events runtime. This upgrade requires
+a new stack: the admission-runtime fingerprint deliberately rejects saved states
+from the previous protocol. It does not rewrite existing signatures, identities,
+keys, access histories or snapshots.
+
+Run `python -m unittest discover -s tests -v` for provider and installer checks,
+and [the optional MyOS compatibility test](../tests/compatibility/README.md) for
+independent signed-history verification and native execution. These local results
+do not claim a hosted end-to-end run of the upgraded release.
+
+Publishing an installer and deploying an application are separate operations.
+`scripts/deploy.py --publish-only --update-readme` uploads only public code and
+templates, verifies their bytes anonymously, and validates the CloudFormation
+template before advertising its URL. It makes no stack changes. A source push
+alone cannot update a previously published immutable installer.

@@ -958,3 +958,5 @@ acceptance/seal/access serialization, availability and an interoperating client.
 Ed25519 signatures use the algorithm in RFC 8032. Language defines Blue content
 identity; Contracts defines execution. No alternative cycle or execution algorithm
 is introduced here.
+
+This edition selects the exact 10M gas prerequisites. Previously published content retains its original semantics.

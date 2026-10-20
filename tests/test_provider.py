@@ -65,7 +65,7 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual(denied.exception.status,403);self.assertEqual(c.p.verifier.attestation(denied.exception.payload)['code'],'ACCESS_DENIED')
         pub=c.p.request('Read Timeline Request',timeline=ref(c.list_access()[0]['controlTimeline']),limit=50)
         history=c.protocol('/timelines/read',wire(c.e,pub));entries=history['object']['page']['entries']
-        self.assertEqual(len(entries),2);self.assertEqual(entries[1]['message']['operation'],'update')
+        self.assertEqual(len(entries),3);self.assertEqual(entries[-1]['message']['operation'],'update')
         restored=Catalogue(c.endpoint,'Test',self.seed,c.snapshot())
         restored.update_access(aid,[tid],[key],'restore');restored.protocol('/timelines/read',s)
         self.assertEqual(restored.list_access()[0]['allowedKeys'],[key])

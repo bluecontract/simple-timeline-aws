@@ -101,6 +101,12 @@ Contracts document. An edit publishes `Contracts/Operation Request` targeting it
 initial BlueId, channel `provider`, operation `update`, with a
 `Coordination/Timeline Access Update` containing both new lists. The provider
 executes this public history before adopting the resulting permissions.
+Creation publishes two entries atomically: the original access document, then
+an update operation with the initial lists. Its executed current state therefore
+already contains the provider-channel checkpoint required by MyOS Activation.
+The update emits `Coordination/Timeline Access Updated`, as do subsequent
+successful updates, including unchanged-list updates. Retries reuse the original
+entries and produce no extra committed event.
 
 Every new Timeline Access document gets a unique provider-owned public timeline,
 even when another document has identical initial grants. Its initial publication

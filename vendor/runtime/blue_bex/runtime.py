@@ -31,7 +31,6 @@ class Result:
     changeset: list
     events: list
     gas_used: int
-    gas_trace: tuple
 
     def blue_output(self):
         return blue_value(self.value)
@@ -48,7 +47,7 @@ class Engine:
         return Compiler(intrinsic_ids=self.intrinsics).compile(source,definition=definition,entry=entry)
 
     @host_boundary
-    def execute(self,program,context=None,*,gas=None,gas_limit=100000,definition=None,entry=None):
+    def execute(self,program,context=None,*,gas=None,gas_limit=10000000,definition=None,entry=None):
         if isinstance(program,Program):
             # Program is a transport value, not an unforgeable admission ticket.
             program=self.compile(program.source,entry=program.selected_entry)
@@ -62,7 +61,7 @@ class Invocation:
         self.context=context;self.gas=gas;self.intrinsics=dict(intrinsics)
         self.constants=self.program.get('constants',{});self.functions=self.program.get('functions',{})
         self.changes=[];self.events=[];self.frames=[{}]
-        self.start_gas=gas.used;self.start_trace=len(gas.trace)
+        self.start_gas=gas.used
 
     def copy(self,value):
         # Values are immutable during evaluation: operators construct new
@@ -102,8 +101,7 @@ class Invocation:
         self.gas.charge('functionCall')
         if self.entry is not None:value=self.function(self.entry,{},charge=False)
         else:value=self.body(self.program)
-        return Result(clone(value),clone(self.changes),clone(self.events),self.gas.used-self.start_gas,
-                      tuple(clone(self.gas.trace[self.start_trace:])))
+        return Result(clone(value),clone(self.changes),clone(self.events),self.gas.used-self.start_gas)
 
     def body(self,b):
         try:

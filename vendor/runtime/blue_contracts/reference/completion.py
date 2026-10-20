@@ -199,7 +199,7 @@ class CompletionMachine:
         return bool(phase.pending[key] or key in phase.initialization or phase.seeds.get(key))
 
     def run_unit(self, phase, members):
-        start = len(self.meter.trace)
+        start = self.meter.used
         before = vector(self.state, members)
         turn_start = len(self.turns)
         while True:
@@ -267,7 +267,7 @@ class CompletionMachine:
         self.units.append(committed('unit-result', {
             'members': list(identity), 'beforeViews': before, 'afterViews': vector(self.state, members),
             'turnResults': [t['identity'] for t in self.turns[turn_start:]], 'output': output,
-            'workSegment': self.relative_segment(start)}))
+            'gas': self.meter.used-start}))
 
     def route_batch(self, phase, batch, members, *, internal):
         grouped = defaultdict(list)
@@ -290,9 +290,6 @@ class CompletionMachine:
                 phase.done.discard(next((tuple(sorted(g)) for g in phase.groups if parent in g), (parent,)))
             else:
                 phase.outside.append(selected)
-
-    def relative_segment(self, start):
-        return [{**row, 'ordinal': i} for i, row in enumerate(self.meter.trace[start:])]
 
     def install_inputs(self, key, incoming):
         from .model import segments
@@ -336,7 +333,7 @@ class CompletionMachine:
         self.activation=deepcopy(self.activation)
         self.state = sealed.copy()
         self.graph = self.fork_graph(self.state)
-        start = len(self.meter.trace)
+        start = self.meter.used
         work_start = len(self.work)
         changes_start = len(self.changes)
         serial = self.serials[key]
@@ -400,7 +397,7 @@ class CompletionMachine:
                 consumedSeeds=[asdict(s) for s in self.frame.consumed],
                 writes=deepcopy(self.frame.writes),
                 retiredTickets=[t.wire() for b in incoming for t in b.tickets if not self.ticket_live(t)],
-                workSegment=self.relative_segment(start)))
+                gas=self.meter.used-start))
             self.turns.append(completion)
             new = set(self.state.documents) - set(sealed.documents)
             owned = new | {key}
@@ -417,7 +414,7 @@ class CompletionMachine:
         logical = self.graph.logical
         # These keys are already exact identities/recipes, never cache addresses.
         return digest('contracts.logical-prefix/completion-1', {
-            'gas': self.meter.trace, 'work': self.work,
+            'gas': self.meter.commitment(), 'work': self.work,
             'manifests': sorted(logical.manifests),
             'established': sorted(logical.established,key=canonical),
             'proofs': sorted(logical.proofs,key=canonical),

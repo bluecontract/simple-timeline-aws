@@ -17,14 +17,14 @@ from .graph import Graph,Archive,prepare_bundle,components
 from .channels import refresh_lifetimes,signature,checkpoint,event_observation,recognize_call,select_seeds
 
 class Processor:
-    def __init__(self, language=None, *, gas_limit=100000, local_limits=None, local_driver=False):
+    def __init__(self, language=None, *, gas_limit=10000000, local_limits=None, local_driver=False):
         self.blue=Bridge(language); self.registry=Registry(self.blue)
         self.archive=Archive(); self.bex=Bex()
         from .receiving import CompletionStore
         self._completion_store=CompletionStore()
         self._completion_reader=None
         self.local_driver=bool(local_driver)
-        integer(gas_limit, 0, 100000)
+        integer(gas_limit, 0, 10000000)
         self.gas_limit=gas_limit; self.local_limits=deepcopy(local_limits or {})
     def typed(self,type_name,**fields):return self.registry.typed(type_name,**fields)
     def install_runtime(self,binding,implementation):self.registry.install(binding,implementation)
@@ -199,7 +199,7 @@ class Run(CompletionMachine):
         # An immutable cause token, NOT an external ordering relation.
         return self.event_id
     def fail_result(self,status,diagnostic):
-        return Outcome(status,self.input.copy(),self.input.identity,self.invocation,event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),gas=self.meter.used,gas_trace=deepcopy(self.meter.trace),rejected=deepcopy(self.meter.rejected),diagnostic=diagnostic)
+        return Outcome(status,self.input.copy(),self.input.identity,self.invocation,event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),gas=self.meter.used,rejected=deepcopy(self.meter.rejected),diagnostic=diagnostic)
     def attempt(self):
         from .chunks import Attempt
         attempt=Attempt(self)
@@ -243,7 +243,7 @@ class Run(CompletionMachine):
         for event in self.events:
             if event['document']==self.state.root:
                 self.meter.owner=self.state.root;self.meter.contracts('rootEventRecorded');self.public.append(deepcopy(event))
-        result=Outcome('APPLIED',self.state,self.input.identity,self.invocation,public_events=deepcopy(self.public),event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),changes=deepcopy(self.changes),checkpoints=deepcopy(self.writes),gas=self.meter.used,gas_trace=deepcopy(self.meter.trace),completions=deepcopy(self.turns),rounds=deepcopy(self.rounds),units=deepcopy(self.units))
+        result=Outcome('APPLIED',self.state,self.input.identity,self.invocation,public_events=deepcopy(self.public),event_trace=deepcopy(self.events),work_trace=deepcopy(self.work),changes=deepcopy(self.changes),checkpoints=deepcopy(self.writes),gas=self.meter.used,completions=deepcopy(self.turns),rounds=deepcopy(self.rounds),units=deepcopy(self.units))
         self.blue.retain([d.body for _,d in sorted(self.state.documents.items())]);self.engine.archive.add(self.state)
         self.engine._completion_store.remember(self.input,result,self.event_id,self.timestamp)
         return result

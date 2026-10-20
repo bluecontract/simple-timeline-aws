@@ -46,7 +46,8 @@ class WireTests(unittest.TestCase):
         snapshot=copy.deepcopy(c.snapshot())
         snapshot['console']['workspace']['overview']['ownerActor']=c.export(owner)
         restored=Catalogue(c.endpoint,'Ignored',b'\x11'*32,snapshot)
-        self.assertEqual(restored.provider_type,'C4xm8EiPv6GW4H4SKkG4RcAfFV6BU8FZ641jBspJ4NmT')
+        # The parent is the pinned access-events publication.
+        self.assertEqual(restored.provider_type,'8UgWHSz9L6VuwmajGxPUEBJP4oM5U2iZZb5kKqPVnuM5')
         self.assertEqual(restored.p.pid,c.p.pid);self.assertEqual(restored.e.identity(restored.timeline(tid)),tid)
         self.assertEqual(restored.e.identity(restored.append(tid,message,'append')),eid)
         self.assertEqual(restored.create_access('Readers',[tid],['22'*32],'grant')['blueId'],access['blueId'])
