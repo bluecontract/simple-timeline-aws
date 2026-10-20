@@ -5,7 +5,7 @@ signed, timestamped entries and executable Timeline Access documents, using the
 selected `blue-coordination` package.
 
 <!-- DEPLOY_BUTTON -->
-[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2F8293d047ca01637f50270686947130ce2f54622a605fb00dabc051e9ab396701%2Ftemplate.json)
+[![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=simple-timeline-provider&templateURL=https%3A%2F%2Fsimple-timeline-releases-581571886327.s3.us-east-1.amazonaws.com%2Freleases%2F3e0eaf4e163ab27d9cfc708e66bc165b8b0bc13ead0e8e4badedcc43fd56e45b%2Ftemplate.json)
 <!-- /DEPLOY_BUTTON -->
 
 Enter the **provider name**, **company name**, **website URL**, and a
